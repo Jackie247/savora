@@ -6,6 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx --watch app.ts",
+    "lint": "npx @biomejs/biome lint",
+    "format": "npx @biomejs/biome format --write",
     "start": "node dist/app.js"
   },
   "author": "",

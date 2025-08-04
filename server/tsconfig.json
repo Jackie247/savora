@@ -1,18 +1,11 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2023",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "types": ["node"],
-    "outDir": "./dist",
-    "rootDir": ".",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipDefaultLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "outDir": "../dist/server",
+    "rootDir": "."
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "references": [
+    { "path": "../types" }
+  ]
 }

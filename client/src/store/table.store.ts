@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import type {
 	TableRowData,
-	TableRowComponentProps,
 	TableType,
 } from "../../../types/table.types";
 
@@ -20,7 +19,7 @@ interface TableStore {
 	deleteRow: (table: TableType, id: string) => void;
 }
 
-const useTableStore = create<TableStore>()((set) => ({
+const useTableStore = create<TableStore>()((set, get) => ({
 	tables: {
 		// these are set to initially empty here but should be pulled from the backend and db
 		fixedPayments: [],
@@ -32,8 +31,8 @@ const useTableStore = create<TableStore>()((set) => ({
 		const emptyRow: TableRowData = {
 			id: crypto.randomUUID(),
 			name: "",
-			value: 0,
-			day: 1,
+			value: "0",
+			day: "1",
 		};
 		set((state) => ({
 			tables: {
@@ -41,22 +40,23 @@ const useTableStore = create<TableStore>()((set) => ({
 				[table]: [...state.tables[table], emptyRow],
 			},
 		}));
+		console.log(JSON.stringify(get().tables));
 	},
 	updateRow: (table, id, updates) => {
 		set((state) => ({
-				tables: {
-					...state.tables,
-					[table]: state.tables[table].map((row) => {
-						// map applies function to each element in the array
-						// if the row id does not match the id we are looking for, return the row unchanged
-						// otherwise, return a new object with the updated properties
-						if (row.id !== id) {
-							return row;
-						} else {
-							return { ...row, ...updates };
-						}
-					}),
-				},
+			tables: {
+				...state.tables,
+				[table]: state.tables[table].map((row) => {
+					// map applies function to each element in the array
+					// if the row id does not match the id we are looking for, return the row unchanged
+					// otherwise, return a new object with the updated properties
+					if (row.id !== id) {
+						return row;
+					} else {
+						return { ...row, ...updates };
+					}
+				}),
+			},
 		}));
 	},
 	deleteRow: (table, id) =>

@@ -3,10 +3,11 @@ export type TableType = "fixedPayments" | "investments" | "credit";
 
 export interface TableRowData {
 	// stores the base schema for a table row
+	tableName?: string; // keep track of which table the row is in
 	id: string;
 	name?: string;
-	value?: number;
-	day?: number;
+	value?: string;
+	day?: string;
 };
 
 

@@ -3,14 +3,10 @@ import useModalStore from "../store/modal.store";
 import useTableStore from "../store/table.store";
 
 const Modal = () => {
-	const { modalValues, resetModal, closeModal, updateModalValue } =
+	const { modalValues, resetModal, closeModal, updateModalValue, submitForm } =
 		useModalStore();
 
 	const { updateRow } = useTableStore();
-
-	const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-	};
 
 	const handleUpdate = (
 		table: TableType,
@@ -35,8 +31,8 @@ const Modal = () => {
 						<select
 							id="modal-table-dropdown"
 							className="mb-4 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-							value={modalValues.table}
-							onChange={(e) => updateModalValue("table", e.target.value)}
+							value={modalValues.expenseType}
+							onChange={(e) => updateModalValue("expenseType", e.target.value)}
 						>
 							<option value="fixed">Fixed Payments</option>
 							<option value="investments">Investments</option>
@@ -91,13 +87,13 @@ const Modal = () => {
 							<button
 								type="submit"
 								className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-								onClick={() =>
-									handleUpdate(modalValues.table, modalValues.id, {
-										name: modalValues.name,
-										value: modalValues.value,
-										day: modalValues.day,
-									})
-								}
+								// onClick={() =>
+								// 	handleUpdate(modalValues.table, modalValues.id, {
+								// 		name: modalValues.name,
+								// 		value: modalValues.value,
+								// 		day: modalValues.day,
+								// 	})
+								// }
 							>
 								Update
 							</button>

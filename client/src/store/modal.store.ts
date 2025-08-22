@@ -10,7 +10,7 @@ export interface ModalStore {
 	openModal: (fieldValues: Partial<ModalFields>) => void;
 	resetModal: () => void;
 	closeModal: () => void;
-	submitForm: (e) => void;
+	submitForm: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const useModalStore = create<ModalStore>()((set, get) => ({
@@ -36,23 +36,26 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 	resetModal: () => set({ modalValues: initialModalValues }),
 	submitForm: async (e) => {
 		e.preventDefault();
-		const data = {
-			...get().modalValues
-		}
-		console.log(`Form data: ${JSON.stringify(data, null, 2)}`)
+		const { id, name, value, day, expenseType } = get().modalValues;
+		const payload = { id, name, value, day, expenseType };
+
+		console.log(`Form data: ${JSON.stringify(payload, null, 2)}`)
 		try{
-			const response = await fetch('/api/expenses', {
+			const response = await fetch('/api/expenses/editExpense', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				}
-				,body: JSON.stringify(data)
+				,body: JSON.stringify(payload)
 			})	
 			if(!response){
 				throw new Error('Network response is not OK')
 			}
 			const result = await response.json()
+
 			console.log('Success', result)
+
+			get().closeModal()
 		}catch(error){
 			console.log("Error:", error)
 		}

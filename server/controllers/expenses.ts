@@ -1,9 +1,11 @@
 import queries from "../db/queries";
+import { Request, Response } from "express";
 
-export const getExpenses = async (req, res) => {
+export const getExpenses = async (req: Request, res: Response) => {
 	// get data from db
 	try {
 		const rows = await queries.getRows();
+		console.log(rows);
 		res.status(200).json(rows);
 	} catch (error) {
 		console.error(error);
@@ -11,10 +13,19 @@ export const getExpenses = async (req, res) => {
 	}
 };
 
-export const addExpense = async (req, res) => {
+export const addExpense = async (req: Request, res: Response) => {
 	// add data to db
 	try {
-		const { name, value, day, expenseType } = req.body;
+		const {
+			name,
+			value,
+			expenseType,
+			is_recurring,
+			expense_date,
+			recurring_day,
+			recurring_interval,
+		} = req.body;
+
 		console.log(
 			`Data sent to /finance is: ${JSON.stringify(req.body, null, 2)}`,
 		);
@@ -25,24 +36,20 @@ export const addExpense = async (req, res) => {
 				return res.status(400).json({ error: "Invalid numeric value" });
 			}
 		}
-		if (day) {
-			const dayAsNumber = Number(day);
-			if (
-				!Number.isInteger(dayAsNumber) ||
-				dayAsNumber < 1 ||
-				dayAsNumber > 31
-			) {
-				return res
-					.status(400)
-					.json({ error: "Day needs to be a valid number between 1-31." });
-			}
+		if (!expenseType) {
+			return res.status(400).json({ error: "Missing expense type" });
 		}
 
-		const result = await queries.addRow(name, value, day, expenseType);
-		console.log(
-			"Successfully added row to DB with values:",
-			JSON.stringify({ name, value, day, expenseType }, null, 2),
+		const result = await queries.addRow(
+			name,
+			value,
+			expenseType,
+			is_recurring,
+			expense_date,
+			recurring_day,
+			recurring_interval,
 		);
+		console.log("Successfully added row to DB");
 		res.status(200).json(result);
 	} catch (error: any) {
 		console.error("Database error:", error.message);
@@ -50,7 +57,7 @@ export const addExpense = async (req, res) => {
 	}
 };
 
-export const editExpense = async (req, res) => {
+export const editExpense = async (req: Request, res: Response) => {
 	try {
 		const { id, name, value, day, expenseType } = req.body;
 		console.log(
@@ -81,7 +88,7 @@ export const editExpense = async (req, res) => {
 
 		const result = await queries.editRow(id, name, value, day, expenseType);
 		console.log(
-			`Succesfully edited row with ID: ${id} with values ${{name, value, day, expenseType}}.`,
+			`Succesfully edited row with ID: ${id} with values ${{ name, value, day, expenseType }}.`,
 		);
 		res.status(200).json(result);
 	} catch (error: any) {
@@ -90,7 +97,7 @@ export const editExpense = async (req, res) => {
 	}
 };
 
-export const deleteExpense = async (req, res) => {
+export const deleteExpense = async (req: Request, res: Response) => {
 	try {
 		const { expenseType, rowId } = req.body;
 		console.log(
@@ -108,9 +115,7 @@ export const deleteExpense = async (req, res) => {
 		}
 
 		const result = await queries.deleteRow(rowId, expenseType);
-		console.log(
-			`Succesfully deleted row with ID: ${rowId}.`,
-		);
+		console.log(`Succesfully deleted row with ID: ${rowId}.`);
 		res.status(200).json(result);
 	} catch (error: any) {
 		console.error("Database error:", error.message);

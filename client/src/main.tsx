@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
-import Finances from "./pages/Finances/Finances.tsx";
+import Finances from "./pages/Finances/Expenses.tsx";
 import "./index.css";
 
 const root = document.getElementById("root");

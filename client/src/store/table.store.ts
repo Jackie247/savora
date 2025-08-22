@@ -1,73 +1,98 @@
 import { create } from "zustand";
-import type {
-	TableRowData,
-	TableType,
-} from "../../../types/table.types";
+import type { TableRowData, TableType } from "../../../types/table.types";
 
 interface TableStore {
-	tables: {
-		fixedPayments: TableRowData[];
-		investments: TableRowData[];
-		credit: TableRowData[];
-	};
-	addRow: (table: TableType) => void;
-	updateRow: (
-		table: TableType,
-		id: string,
-		updates: Partial<TableRowData>,
-	) => void;
-	deleteRow: (table: TableType, id: string) => void;
+	tables: Record<TableType, Partial<TableRowData>[]>;
+	addRow: (expenseType: TableType) => void;
+	deleteRow: (expenseType: TableType, rowId: string) => void;
+	getRows: () => void;
 }
 
 const useTableStore = create<TableStore>()((set, get) => ({
 	tables: {
-		// these are set to initially empty here but should be pulled from the backend and db
+		// empty initially
 		fixedPayments: [],
 		investments: [],
 		credit: [],
 	},
-	addRow: (table) => {
-		// adds a empty row to the table which can be edited later.
-		const emptyRow: TableRowData = {
-			id: crypto.randomUUID(),
-			name: "",
-			value: "0",
-			day: "1",
-		};
-		set((state) => ({
-			tables: {
-				...state.tables,
-				[table]: [...state.tables[table], emptyRow],
-			},
-		}));
-		console.log(JSON.stringify(get().tables));
+	addRow: async (table) => {
+		const row = { name: "", value: "", day: "", expenseType: table };
+		const endpoint = "/api/expenses/deleteExpense";
+		try {
+			const response = await fetch("/api/expenses/addExpense", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(row),
+			});
+			if (!response) {
+				throw new Error(`POST request to ${endpoint} failed`);
+			}
+			const result = await response.json();
+
+			console.log("Success", result);
+		} catch (error) {
+			console.log("Error:", error);
+		}
 	},
-	updateRow: (table, id, updates) => {
-		set((state) => ({
-			tables: {
-				...state.tables,
-				[table]: state.tables[table].map((row) => {
-					// map applies function to each element in the array
-					// if the row id does not match the id we are looking for, return the row unchanged
-					// otherwise, return a new object with the updated properties
-					if (row.id !== id) {
-						return row;
-					} else {
-						return { ...row, ...updates };
-					}
-				}),
-			},
-		}));
-	},
-	deleteRow: (table, id) =>
-		set((state) => {
-			return {
-				tables: {
-					...state.tables,
-					[table]: state.tables[table].filter((row) => row.id !== id), // filter returns a new array with all elements that pass the conditional
+	deleteRow: async (expenseType, rowId) => {
+		const endpoint = "/api/expenses/deleteExpense";
+
+		try {
+			const response = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
 				},
+				body: JSON.stringify({ expenseType, rowId }),
+			});
+
+			if (!response) {
+				throw new Error(`POST request to ${endpoint} failed`);
+			}
+			const result = await response.json();
+
+			console.log("Success", result);
+		} catch (error) {
+			console.log("Error:", error);
+		}
+	},
+	getRows: async () => {
+		try {
+			const response = await fetch("/api/expenses/");
+			const rows = await response.json();
+
+			const updatedTable: Record<TableType, Partial<TableRowData>[]> = {
+				fixedPayments: [],
+				investments: [],
+				credit: [],
 			};
-		}),
+
+			if (rows) {
+				rows.forEach((row: TableRowData) => {
+					switch (row.expenseType) {
+						case "fixedPayments":
+							updatedTable.fixedPayments.push(row);
+							break;
+						case "investments":
+							updatedTable.investments.push(row);
+							break;
+						case "credit":
+							updatedTable.credit.push(row);
+							break;
+						default:
+							console.log("All rows done");
+					}
+				});
+			}
+			console.log("Updated table is: ", JSON.stringify(updatedTable, null, 2));
+			set((state) => ({
+				...state,
+				tables: updatedTable,
+			}));
+		} catch (error) {
+			console.log(error);
+		}
+	},
 }));
 
 export default useTableStore;

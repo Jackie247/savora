@@ -16,7 +16,7 @@ function HomePage() {
 					<a href="/">Dashboard</a>
 				</li>
 				<li>
-					<a href="/finances">Finances</a>
+					<a href="/expenses">Expenses</a>
 				</li>
 				<li>
 					<a href="/options">Options</a>

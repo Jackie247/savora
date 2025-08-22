@@ -3,28 +3,26 @@ export type TableType = "fixedPayments" | "investments" | "credit";
 
 export interface TableRowData {
 	// stores the base schema for a table row
-	tableName?: string; // keep track of which table the row is in
+	expenseType?: string; // keep track of which table the row is in
 	id: string;
 	name?: string;
-	value?: string;
-	day?: string;
-};
-
-
-export interface NewRow extends Partial<Omit<TableRowData, 'id'>> {
-	// For creating new rows (all fields optional except id)
+	value?: number;
+	is_recurring?: boolean;
+	expense_date?: Date;
+	recurring_day?: number; // day of month for recurring expenses
+	recurring_interval?: string; // 'monthly', 'yearly', etc.
 }
+
+export type NewRow = Omit<TableRowData, "id">;
 
 // Props for TableRow component
 export interface TableRowComponentProps {
 	// extends the table row schema by adding functions that can manipulate the row
-	row: TableRowData,
+	row: TableRowData;
 	onEdit: () => void;
-  	onDelete: () => void;
-};
+	onDelete: () => void;
+}
 
 export interface TableComponentProps {
-	tableName: TableType,
-};
-
-
+	tableName: TableType;
+}

@@ -5,11 +5,11 @@ import { hashPassword, comparePassword } from "../utils/auth";
 
 export const generateToken = async (req: Request, res: Response) => {
 	try {
-		const { username, email, password } = req.body;
+		const { username, email, password, is_admin = false } = req.body;
 		// hash the password before send to db
 		const hashedPw = await hashPassword(password);
 
-		const newUser = await queries.addUser(username, email, hashedPw);
+		const newUser = await queries.addUser(username, email, hashedPw, is_admin);
 		console.log(`INSERTED user ${JSON.stringify(newUser, null, 2)}`);
 		// // create jwt token
 		const token = jwt.sign(

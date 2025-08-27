@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
-import Finances from "./pages/Finances/Finances.tsx";
+import Expenses from "./pages/Expenses/Expenses.tsx";
 import "./index.css";
 
 const root = document.getElementById("root");
@@ -12,7 +12,7 @@ if (root) {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
-					<Route path="/finances" element={<Finances />} />
+					<Route path="/expenses" element={<Expenses />} />
 					{/* <Route path="/" element={<Options />} /> */}
 					{/* <Route path="/" element={<Help />} /> */}
 				</Routes>

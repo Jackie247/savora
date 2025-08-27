@@ -1,26 +1,24 @@
 {
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "../node_modules/.tsbuildinfo/client",
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "jsx": "react-jsx",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "../node_modules/.tsbuildinfo/client",
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"jsx": "react-jsx",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"moduleDetection": "force",
+		"noEmit": true,
 
-    "useDefineForClassFields": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
-  },
-  "include": ["src"],
-  "references": [
-    { "path": "../types" }
-  ]
+		"useDefineForClassFields": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"erasableSyntaxOnly": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
+	},
+	"include": ["src"],
+	"references": [{ "path": "../types" }]
 }

@@ -1,6 +1,6 @@
 import { ClerkLoaded, ClerkLoading } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import { SignedIn, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import Header from "../../components/Header";
 import useAuthStore from "../../store/auth.store";
 import SummaryBox from "./SummaryBox";
@@ -81,6 +81,45 @@ function Dashboard() {
 							</section>
 						</div>
 					</SignedIn>
+					<SignedOut>
+						<div className="flex-1 bg-gray-50">
+							<div className="px-6 my-4">
+								<h1 className="text-xl text-gray-600">Hello, welcome to Savora!</h1>
+							</div>
+
+							<section className="px-6 my-4 flex justify-items-center">
+								<button className="bg-white border border-gray-100 shadow-sm rounded-sm  p-1 justify-center">
+									This month
+								</button>
+								<button className=" bg-white border border-gray-100 shadow-sm rounded-sm  p-1 justify-center">
+									Last month
+								</button>
+							</section>
+							<section className="my-8">
+								<Carousel>
+									<SummaryBox header="Balance" number="9450" />
+									<SummaryBox header="Income" number="9450" />
+									<SummaryBox header="Expenses" number="3792" />
+								</Carousel>
+							</section>
+							<section className="px-6 my-8 flex flex-col ">
+								<table>
+									<tr>
+										<th>Description</th>
+										<th>Method</th>
+										<th>Date</th>
+										<th>Amount</th>
+									</tr>
+									<tr>
+										<td>Netflix</td>
+										<td>Direct Debit</td>
+										<td>18/9/2025</td>
+										<td>£19.99</td>
+									</tr>
+								</table>
+							</section>
+						</div>
+					</SignedOut>
 				</div>
 			</ClerkLoaded>
 			<ClerkLoading>Loading...</ClerkLoading>

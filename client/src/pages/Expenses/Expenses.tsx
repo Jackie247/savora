@@ -1,14 +1,11 @@
-import Table from "../../components/Table.tsx";
-import Modal from "../../components/Modal.tsx";
+import Table from "./Table.tsx";
+import Modal from "./Modal.tsx";
 import useModalStore from "../../store/modal.store.ts";
-import { useEffect } from "react";
-import useTableStore from "../../store/table.store.ts";
 import useExpensesStore from "../../store/expenses.store.ts";
-import type { TableType } from "../../../../types/table.types.ts";
+import { ChevronLeft } from "lucide-react";
 
 function Expenses() {
 	const { isOpen } = useModalStore();
-	const { getRows } = useTableStore();
 	const { currentTab, updateCurrentTab } = useExpensesStore();
 
 	const handleTabSelect = (e) => {
@@ -16,69 +13,57 @@ function Expenses() {
 		updateCurrentTab(e.target.value);
 	};
 
-	const convertToTitle = (tab: TableType) => {
-		switch (tab) {
-			case "fixedPayments":
-				return "Fixed Payments";
-			case "investments":
-				return "Investments";
-			case "credit":
-				return "Credit";
-			default:
-				return "Table";
-		}
-	};
-
-	useEffect(() => {
-		getRows();
-	}, [getRows]);
-
 	return (
-		<div>
-			<section>
+		<div className="flex flex-col min-h-screen">
+			<section className="bg-blue-900">
 				{/* This will contain feature buttons like, pagination for next month, prev month. calendar to go to specific month. Add transaction, etc.*/}
-				<div className="flex justify-between p-8">
-					<div>
-						<button type="button">Prev</button>
-						<button type="button">Next</button>
-					</div>
-					<div>
-						<button
-							type="button"
-							value="fixedPayments"
-							className="mx-2 bg-blue-300 p-2 rounded-sm"
-							onClick={handleTabSelect}
-						>
-							Fixed Payments
-						</button>
-						<button
-							type="button"
-							value="investments"
-							className="mx-2 bg-blue-300 p-2 rounded-sm"
-							onClick={handleTabSelect}
-						>
-							Investments
-						</button>
-						<button
-							type="button"
-							value="credit"
-							className="mx-2 bg-blue-300 p-2 rounded-sm"
-							onClick={handleTabSelect}
-						>
-							Credit
+				<a href="/">
+					<div className="flex p-4">
+						<ChevronLeft className="text-white" />
+						<button className="text-white" type="button">
+							Dashboard
 						</button>
 					</div>
-					<div>Calender</div>
+				</a>
+
+				<div className="text-white flex flex-col p-4">
+					<span>Total Expenses</span>
+					<span className="text-4xl">
+						<b>£840.00</b>
+					</span>
+				</div>
+				<div className="flex p-4 space-x-4">
+					<button
+						type="button"
+						value="fixedPayments"
+						className="bg-white border border-gray-100 shadow rounded-xs p-1 px-2 justify-center"
+						onClick={handleTabSelect}
+					>
+						Fixed Payments
+					</button>
+					<button
+						type="button"
+						value="investments"
+						className="bg-blue-900 text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
+						onClick={handleTabSelect}
+					>
+						Investments
+					</button>
+					<button
+						type="button"
+						value="credit"
+						className="bg-blue-900 text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
+						onClick={handleTabSelect}
+					>
+						Credit
+					</button>
 				</div>
 			</section>
-			<section>
-				{currentTab && (
-					<article className="w-full">
-						<h2>{convertToTitle(currentTab)}</h2>
-						<Table tableName={currentTab} />
-					</article>
-				)}
-			</section>
+			{currentTab && (
+				<section className="flex-1 bg-gray-200">
+					<Table tableName={currentTab} />
+				</section>
+			)}
 			{isOpen && <Modal />}
 		</div>
 	);

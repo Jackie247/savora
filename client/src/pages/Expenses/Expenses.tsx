@@ -3,15 +3,22 @@ import Modal from "./Modal.tsx";
 import useModalStore from "../../store/modal.store.ts";
 import useExpensesStore from "../../store/expenses.store.ts";
 import { ChevronLeft } from "lucide-react";
+import { useEffect } from "react";
+import useAuthStore from "../../store/auth.store.ts";
 
 function Expenses() {
 	const { isOpen } = useModalStore();
-	const { currentTab, updateCurrentTab } = useExpensesStore();
+	const { currentTab, currentTabTotal, updateCurrentTab , getCurrentTabTotal} = useExpensesStore();
+	const {currentUserId} = useAuthStore()
 
 	const handleTabSelect = (e) => {
 		console.log(e.target.value);
 		updateCurrentTab(e.target.value);
 	};
+
+	useEffect(()=> {
+		getCurrentTabTotal(currentUserId, currentTab)
+	}, [currentTab])
 
 	return (
 		<div className="flex flex-col min-h-screen">
@@ -29,7 +36,7 @@ function Expenses() {
 				<div className="text-white flex flex-col p-4">
 					<span>Total Expenses</span>
 					<span className="text-4xl">
-						<b>£840.00</b>
+						<b>£{currentTabTotal}</b>
 					</span>
 				</div>
 				<div className="flex p-4 space-x-4">

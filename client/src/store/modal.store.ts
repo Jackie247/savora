@@ -1,12 +1,22 @@
 import { create } from "zustand";
 import type { ModalFields } from "../../../types/modal.types";
+import useTableStore from "./table.store";
+import useAuthStore from "./auth.store";
 
-const initialModalValues = { expenseType: "", name: "", value: "", day: "" };
+const initialModalValues = {
+	name: "",
+	value: 0,
+	expenseType: "",
+	is_recurring: false,
+	expense_date: new Date(),
+	recurring_day: new Date(),
+	recurring_interval: "",
+};
 
 export interface ModalStore {
 	isOpen: boolean;
 	modalValues: ModalFields;
-	updateModalValue: (field: string, value: string) => void;
+	updateModalValue: (field: string, value: string | number | boolean | Date) => void;
 	openModal: (fieldValues: Partial<ModalFields>) => void;
 	resetModal: () => void;
 	closeModal: () => void;
@@ -36,28 +46,29 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 	resetModal: () => set({ modalValues: initialModalValues }),
 	submitForm: async (e) => {
 		e.preventDefault();
-		const { id, name, value, day, expenseType } = get().modalValues;
-		const payload = { id, name, value, day, expenseType };
+		const { id, name, value, recurring_day, expenseType } = get().modalValues;
+		const payload = { id, name, value, recurring_day, expenseType };
 
-		console.log(`Form data: ${JSON.stringify(payload, null, 2)}`)
-		try{
-			const response = await fetch('/api/expenses/editExpense', {
-				method: 'POST',
+		console.log(`Form data: ${JSON.stringify(payload, null, 2)}`);
+		try {
+			const response = await fetch("/api/expenses/editExpense", {
+				method: "POST",
 				headers: {
-					'Content-Type': 'application/json',
-				}
-				,body: JSON.stringify(payload)
-			})	
-			if(!response){
-				throw new Error('Network response is not OK')
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(payload),
+			});
+			if (!response) {
+				throw new Error("Network response is not OK");
 			}
-			const result = await response.json()
+			const result = await response.json();
 
-			console.log('Success', result)
+			console.log("Success", result);
 
-			get().closeModal()
-		}catch(error){
-			console.log("Error:", error)
+			get().closeModal();
+			useTableStore.getState().getRows(useAuthStore.getState().currentUserId);
+		} catch (error) {
+			console.log("Error:", error);
 		}
 	},
 }));

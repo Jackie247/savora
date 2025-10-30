@@ -1,15 +1,13 @@
 import { create } from "zustand";
 import type { ModalFields } from "../../../types/modal.types";
-import useTableStore from "./table.store";
-import useAuthStore from "./auth.store";
 
 const initialModalValues = {
 	name: "",
 	value: 0,
 	expenseType: "",
 	is_recurring: false,
-	expense_date: new Date(),
-	recurring_day: new Date(),
+	expense_date: "",
+	recurring_day: "",
 	recurring_interval: "",
 };
 
@@ -46,7 +44,8 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 	resetModal: () => set({ modalValues: initialModalValues }),
 	submitForm: async (e) => {
 		e.preventDefault();
-		const { id, name, value, recurring_day, expenseType } = get().modalValues;
+		console.log(`Modal values submitted are ${JSON.stringify(get().modalValues, null, 2)}`)
+		const { id, name, value, expenseType, is_recurring, expense_date, recurring_day, recurring_interval } = get().modalValues;
 		const payload = { id, name, value, recurring_day, expenseType };
 
 		console.log(`Form data: ${JSON.stringify(payload, null, 2)}`);

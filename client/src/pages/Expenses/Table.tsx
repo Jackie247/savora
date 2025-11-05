@@ -5,7 +5,6 @@ import type {
 	NewRow,
 	TableRowData,
 } from "../../../../types/table.types";
-import useModalStore from "../../store/modal.store";
 import useTableStore from "../../store/table.store";
 import { useEffect } from "react";
 import useAuthStore from "../../store/auth.store";
@@ -14,8 +13,7 @@ import convertToTitle from "../../utils/convertToTitle";
 import { ChevronDown } from "lucide-react";
 
 const Table = ({ tableName }: TableComponentProps) => {
-	const { openModal } = useModalStore();
-	const { tables, addRow, getRows, deleteRow } = useTableStore();
+	const { tables, addRow, getRows } = useTableStore();
 	const { currentUserId } = useAuthStore();
 
 	const handleAddRow = async (expenseType: TableType) => {
@@ -24,7 +22,7 @@ const Table = ({ tableName }: TableComponentProps) => {
 			value: 0,
 			expenseType: expenseType,
 			is_recurring: true,
-			expense_date: new Date(), // For one-time expenses, set today's date
+			expense_date: "", // For one-time expenses, set today's date
 			recurring_day: 1, // For recurring expenses, default to 1st of month
 			recurring_interval: undefined,
 			user_id: Number(currentUserId),
@@ -36,22 +34,6 @@ const Table = ({ tableName }: TableComponentProps) => {
 		await getRows(currentUserId);
 	};
 
-	const handleEditRow = (rowId: number) => {
-		const row = tables[tableName].find((r) => r.id === rowId);
-		if (!row) {
-			console.error("Row not found:", rowId);
-			return;
-		}
-		openModal({
-			table: tableName,
-			...row,
-		});
-	};
-	const handleDeleteRow = async (tableName: TableType, id: number) => {
-		await deleteRow(tableName, id);
-		await getRows(currentUserId);
-	};
-
 	useEffect(() => {
 		getRows(currentUserId);
 	}, [getRows]);
@@ -60,7 +42,6 @@ const Table = ({ tableName }: TableComponentProps) => {
 		<div className="p-4 overflow-x-auto flex-1">
 			<header className="flex items-center space-x-4 mb-4">
 				<h2>{convertToTitle(tableName)}</h2>
-
 				<button
 					type="button"
 					onClick={() => handleAddRow(tableName)}
@@ -74,35 +55,31 @@ const Table = ({ tableName }: TableComponentProps) => {
 				</div>
 			</header>
 
-			<div className="overflow-x-auto">
-				<table className="w-full table-auto border-collapse bg-white rounded rounded-md">
-					<thead className="bg-gray-50">
-						<tr>
-							<th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-								Date
-							</th>
-							<th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-								Name
-							</th>
-							<th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-								Value
-							</th>
-							<th className="px-2 py-2"></th>
-						</tr>
-					</thead>
-					<tbody className="bg-white divide-y">
-						{tables[tableName]
-							?.filter((row): row is TableRowData => row.id !== undefined)
-							?.map((row) => (
-								<TableRow
-									key={row.id}
-									row={row}
-									onEdit={() => handleEditRow(row.id)}
-									onDelete={() => handleDeleteRow(tableName, row.id)}
-								/>
-							))}
-					</tbody>
-				</table>
+			<div className="bg-white rounded-sm">
+				{tables[tableName].map((row) => (
+					<TableRow
+						row={row}
+					></TableRow>
+					// <div
+					// 	key={row.id}
+					// 	className="cursor-pointer hover:bg-blue-50 transition-colors"
+					// 	onClick={() => handleEditRow(row.id)}
+					// >
+
+					// 	<span className="py-3">
+					// 		<button
+					// 			onClick={(e) => {
+					// 				e.stopPropagation(); // prevent row click
+					// 				handleDeleteRow(tableName, row.id);
+					// 			}}
+					// 			className="p-1 text-red-500 hover:text-red-700 rounded-full"
+					// 			aria-label="Delete"
+					// 		>
+					// 			<X className="w-4 h-4" />
+					// 		</button>
+					// 	</span>
+					// </div>
+				))}
 			</div>
 		</div>
 	);

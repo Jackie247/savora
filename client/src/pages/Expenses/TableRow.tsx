@@ -20,6 +20,22 @@ const TableRow = ({ row }: TableRowComponentProps) => {
 		await getRows(currentUserId);
 	};
 
+	const formatDay = (day: number) => {
+		// 1 st, 2 nd 3 rd, 4 - 0 th
+		if(day > 3 && day < 21){
+			return `${day}st`
+		}
+		switch(day % 10){
+			case 1:
+				return `${day}st`
+			case 2:
+				return `${day}nd`
+			case 3:
+				return `${day}rd`
+			default:
+				return `${day}th`
+		}
+	}
 
 	// Close menu on click outside
 	useEffect(() => {
@@ -33,28 +49,30 @@ const TableRow = ({ row }: TableRowComponentProps) => {
 	}, []);
 
 	const formattedPrice = row.value ? row.value.toFixed(2) : 0;
-	const reversedDate = `${row.expense_date.split("-")[2]}-${row.expense_date.split("-")[1]}-${row.expense_date.split("-")[0]}`
-	
+
 	return (
 		<div className="flex items-center h-14 border-b border-gray-200 px-2 relative">
-			{/* Hamburger */}
+			{/* Icon */}
 			<div className="bg-gray-300 p-2 rounded-sm">
 				<Hamburger />
 			</div>
 
-			{/* Row content */}
 			<div className="flex flex-col flex-1 ml-2">
-				<span>{row.name}</span>
+				<span>{row.name ? row.name : "No name"}</span>
 				<span className="text-xs text-gray-400">Subscription</span>
 			</div>
 
-			{/* Value */}
 			<div className="flex flex-col pr-2">
-				<span className="text-right">£{formattedPrice}</span>
-				<span className="text-xs text-gray-400">{reversedDate}</span>
+				<span className="text-right">
+					<b>£{formattedPrice}</b>
+				</span>
+				<span className="text-xs text-gray-400">
+					{row.expense_date
+						? row.expense_date.split("-").reverse().join("-")
+						: row.recurring_day ? `Due ${formatDay(row.recurring_day)}` : "No date"}
+				</span>
 			</div>
 
-			{/* Overflow menu */}
 			<div className="relative" ref={menuRef}>
 				<button
 					type="button"

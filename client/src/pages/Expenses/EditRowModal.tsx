@@ -1,7 +1,6 @@
 import useModalStore from "../../store/modal.store";
 import { useState } from "react";
 import ModalField from "../../components/ModalField";
-import DayPicker from "../../components/DayOfMonthPicker";
 import DayOfMonthPicker from "../../components/DayOfMonthPicker";
 
 const EditRowModal = () => {
@@ -102,7 +101,8 @@ const EditRowModal = () => {
 					</div>
 
 					{isRecurring && interval === "monthly" && 
-					<DayOfMonthPicker />}
+
+					<DayOfMonthPicker recurringDay={modalValues.recurring_day} updateModalValue={updateModalValue}/>}
 
 					<div className="flex justify-between">
 						<button

@@ -8,9 +8,10 @@ export interface TableRowData {
 	name?: string;
 	value?: number;
 	is_recurring?: boolean;
-	expense_date?: Date;
+	expense_date?: string;
 	recurring_day?: number; // day of month for recurring expenses
-	recurring_interval?: string; // 'monthly', 'yearly', etc.
+	recurring_interval?: string; // 'monthly' etc.
+	recurring_day_of_week?: string; // day of week for recurring expenses
 	user_id: number;
 }
 

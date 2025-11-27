@@ -7,4 +7,5 @@ export interface ModalFields{
     expense_date: string;
     recurring_day: string;
     recurring_interval: string
+    recurring_day_of_week: string
 }

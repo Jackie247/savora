@@ -38,15 +38,15 @@ const editRow = async (
 	id?: string,
 	name?: string,
 	value?: string,
-	day?: string,
+	recurring_day?: string,
 	expenseType?: string,
 ) => {
 	const result = await pool.query(
 		`UPDATE expenses 
-        SET name = $2, value = $3, day = $4, expense_type = $5 
+        SET name = $2, value = $3, recurring_day = $4, expense_type = $5 
         WHERE id = $1
-        RETURNING id, name, value, day, expense_type`,
-		[id, name, value, day, expenseType],
+        RETURNING id, name, value, recurring_day, expense_type`,
+		[id, name, value, recurring_day, expenseType],
 	);
 	return result.rows[0];
 };

@@ -1,4 +1,4 @@
-import pool from "../db/pool.ts";
+import pool from "../db/pool";
 
 const addRow = async (
 	name?: string,

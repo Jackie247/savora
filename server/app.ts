@@ -5,7 +5,6 @@ import {
 import dotenv from "dotenv";
 import express from "express";
 import expensesRouter from "./routes/expenses";
-import userRouter from "./routes/user.js";
 
 dotenv.config();
 

@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import type { ModalFields } from "../../../types/modal.types";
+import useAuthStore from "./auth.store";
+import useTableStore from "./table.store";
 
-const initialModalValues = {
+const initialModalValues: Omit<ModalFields, 'id'> = {
 	name: "",
 	value: 0,
 	expenseType: "",
@@ -9,13 +11,15 @@ const initialModalValues = {
 	expense_date: "",
 	recurring_day: "",
 	recurring_interval: "",
+	recurring_day_of_week: "",
 };
 
 export interface ModalStore {
 	isOpen: boolean;
 	modalValues: ModalFields;
-	updateModalValue: (field: string, value: string | number | boolean | Date) => void;
+	updateModalValue: (field: string, value: string | number | boolean) => void;
 	openModal: (fieldValues: Partial<ModalFields>) => void;
+	resetValue: (field: keyof Omit<ModalFields, 'id'>) => void;
 	resetModal: () => void;
 	closeModal: () => void;
 	submitForm: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -41,14 +45,28 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 			},
 		})),
 	closeModal: () => set({ isOpen: false }),
+	resetValue: (field) =>
+		set((state) => ({
+			...state,
+			modalValues: {
+				...state.modalValues,
+				[field]: initialModalValues[field],
+			},
+		})),
 	resetModal: () => set({ modalValues: initialModalValues }),
 	submitForm: async (e) => {
 		e.preventDefault();
-		console.log(`Modal values submitted are ${JSON.stringify(get().modalValues, null, 2)}`)
-		const { id, name, value, expenseType, is_recurring, expense_date, recurring_day, recurring_interval } = get().modalValues;
-		const payload = { id, name, value, recurring_day, expenseType };
 
-		console.log(`Form data: ${JSON.stringify(payload, null, 2)}`);
+		const state = get()
+		if(state.modalValues.is_recurring){
+			state.resetValue("expense_date")	
+		}else{
+			state.resetValue("recurring_day")
+			state.resetValue("recurring_day_of_week")
+		}
+		
+		const payload = get().modalValues;
+		
 		try {
 			const response = await fetch("/api/expenses/editExpense", {
 				method: "POST",
@@ -60,10 +78,7 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 			if (!response) {
 				throw new Error("Network response is not OK");
 			}
-			const result = await response.json();
-
-			console.log("Success", result);
-
+			await response.json();
 			get().closeModal();
 			useTableStore.getState().getRows(useAuthStore.getState().currentUserId);
 		} catch (error) {

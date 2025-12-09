@@ -1,10 +1,4 @@
-import useIncomeStore from "../../store/income.store";
-
-const SummaryBox = (props) => {
-	// const incomeStore = useIncomeStore
-	const { header, balance, income, expenses } = props;
-
-	const formatNumber = (number: number) => {
+const formatNumber = (number: number) => {
 		const formattedNumber = new Intl.NumberFormat("en-US", {
 			style: "currency",
 			currency: "GBP",
@@ -14,6 +8,7 @@ const SummaryBox = (props) => {
 		return formattedNumber;
 	};
 
+const SummaryBox = ({ balance, income, expenses }) => {
 	const formattedIncome = formatNumber(income);
 	const formattedExpenses = formatNumber(expenses);
 	const formattedBalance = formatNumber(balance);

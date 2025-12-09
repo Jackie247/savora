@@ -1,7 +1,8 @@
-import useModalStore from "../../store/modal.store";
 import { useState } from "react";
-import ModalField from "../../components/ModalField";
 import DayOfMonthPicker from "../../components/DayOfMonthPicker";
+import DayOfWeekPicker from "../../components/DayOfWeekPicker";
+import ModalField from "../../components/ModalField";
+import useModalStore from "../../store/modal.store";
 
 const EditRowModal = () => {
 	const { modalValues, resetModal, closeModal, updateModalValue, submitForm } =
@@ -10,10 +11,23 @@ const EditRowModal = () => {
 	const [interval, setInterval] = useState(
 		modalValues.recurring_interval || "daily",
 	);
-	const options = [
+	const [weeklyDay, setWeeklyDay] = useState(
+		modalValues.recurring_day_of_week || "monday",
+	);
+	const intervalOptions = [
 		{ value: "daily", label: "Daily" },
 		{ value: "weekly", label: "Weekly" },
 		{ value: "monthly", label: "Monthly" },
+	];
+
+	const weeklyOptions = [
+		{ value: "monday", label: "Monday" },
+		{ value: "tuesday", label: "Tuesday" },
+		{ value: "wednesday", label: "Wednesday" },
+		{ value: "thursday", label: "Thursday" },
+		{ value: "friday", label: "Friday" },
+		{ value: "saturday", label: "Saturday" },
+		{ value: "sunday", label: "Sunday" },
 	];
 
 	return (
@@ -74,7 +88,7 @@ const EditRowModal = () => {
 									}}
 									className="mt-1 p-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
 								>
-									{options?.map((option) => (
+									{intervalOptions?.map((option) => (
 										<option key={option.value} value={option.value}>
 											{option.label}
 										</option>
@@ -100,9 +114,40 @@ const EditRowModal = () => {
 						></ModalField>
 					</div>
 
-					{isRecurring && interval === "monthly" && 
+					{isRecurring && interval === "monthly" && (
+						<DayOfMonthPicker
+							recurringDay={modalValues.recurring_day}
+							updateModalValue={updateModalValue}
+						/>
+					)}
+					{isRecurring && interval === "weekly" && (
+						<div className="mb-4">
+							<div className="flex justify-center">
+								<label
+									htmlFor="day-week-picker"
+									className="text-sm font-medium text-gray-700"
+								>
+									Day:
+								</label>
 
-					<DayOfMonthPicker recurringDay={modalValues.recurring_day} updateModalValue={updateModalValue}/>}
+								<select
+									id="day-week-picker"
+									value={modalValues.recurring_day_of_week as string}
+									onChange={(e) => {
+										updateModalValue("recurring_day_of_week", e.target.value);
+										setWeeklyDay(e.target.value);
+									}}
+									className="mt-1 p-1 block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
+								>
+									{weeklyOptions?.map((option) => (
+										<option key={option.value} value={option.value}>
+											{option.label}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+					)}
 
 					<div className="flex justify-between">
 						<button

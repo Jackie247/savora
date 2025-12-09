@@ -6,7 +6,7 @@ interface Option {
 interface ModalFieldProps {
 	type?: string;
 	field: string;
-	value: string | number | boolean
+	value: string | number | boolean;
 	updateModalValue: (field: string, value: any) => void;
 	setIsRecurring?: (isRecurring: boolean) => void;
 	options?: Option[];
@@ -31,7 +31,7 @@ const ModalField: React.FC<ModalFieldProps> = ({
 					id={`${field}-input`}
 					value={value as string}
 					onChange={(e) => updateModalValue(field, e.target.value)}
-					className="mt-1 p-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+					className="mt-1 p-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
 				>
 					{options?.map((option) => (
 						<option key={option.value} value={option.value}>
@@ -64,14 +64,13 @@ const ModalField: React.FC<ModalFieldProps> = ({
 					type="date"
 					value={value as string}
 					onChange={(e) => {
-						const isoDate = new Date(e.target.value).toISOString();
-						updateModalValue("expense_date", isoDate);
+						updateModalValue(field, e.target.value);
 					}}
 					className="mt-1 block border-gray-300"
 				/>
 			);
 			break;
-
+			
 		default:
 			inputField = (
 				<input

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { CalendarDays } from "lucide-react";
+import { useState } from "react";
 
 const DayOfMonthPicker = ({ recurringDay, updateModalValue }) => {
 	const daysInMonth = 31;
@@ -8,7 +8,7 @@ const DayOfMonthPicker = ({ recurringDay, updateModalValue }) => {
 
 	const handleClick = (e) => {
 		const inputNumber = Number(e.target.value)
-		console.log(inputNumber);
+		// console.log(inputNumber);
 		setDay(inputNumber);
 		updateModalValue("recurring_day", inputNumber)
 		setIsOpen(false);

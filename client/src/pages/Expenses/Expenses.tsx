@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { Bell, ChevronLeft } from "lucide-react";
 import { useEffect } from "react";
 import useExpensesStore from "../../store/expenses.store.ts";
 import useModalStore from "../../store/modal.store.ts";
@@ -8,9 +8,8 @@ import Table from "./Table.tsx";
 
 function Expenses() {
 	const { isOpen } = useModalStore();
-	const { currentTab, updateCurrentTab } =
-		useExpensesStore();
-	const {tables, total, calculateTotal} = useTableStore();
+	const { currentTab, updateCurrentTab } = useExpensesStore();
+	const { tables, currentTableTotal, calculateTableTotal } = useTableStore();
 
 	const handleTabSelect = (e) => {
 		console.log(e.target.value);
@@ -18,26 +17,29 @@ function Expenses() {
 	};
 
 	useEffect(() => {
-  		calculateTotal(currentTab);
+		calculateTableTotal(currentTab);
 	}, [tables, currentTab]);
 
 	return (
 		<div className="flex flex-col min-h-screen">
-			<section className="bg-blue-900">
+			<section className="bg-primary">
 				{/* This will contain feature buttons like, pagination for next month, prev month. calendar to go to specific month. Add transaction, etc.*/}
 				<a href="/">
-					<div className="flex p-4">
-						<ChevronLeft className="text-white" />
-						<button className="text-white" type="button">
+					<div className="flex justify-between p-4 bg-white">
+						<ChevronLeft/>
+						<button type="button">
 							Dashboard
+						</button>
+						<button type="button">
+							<Bell />
 						</button>
 					</div>
 				</a>
 
-				<div className="text-white flex flex-col p-4">
+				<div className="text-white flex flex-col p-6">
 					<span>Total Expenses</span>
 					<span className="text-4xl">
-						<b>£{total}</b>
+						<b>£{currentTableTotal}</b>
 					</span>
 				</div>
 				<div className="flex p-4 space-x-4">
@@ -52,7 +54,7 @@ function Expenses() {
 					<button
 						type="button"
 						value="investments"
-						className="bg-blue-900 text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
+						className="bg-secondary text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
 						onClick={handleTabSelect}
 					>
 						Investments
@@ -60,15 +62,16 @@ function Expenses() {
 					<button
 						type="button"
 						value="credit"
-						className="bg-blue-900 text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
+						className="bg-secondary text-white border border-gray-100 shadow-sm px-2 rounded-xs p-1 justify-center"
 						onClick={handleTabSelect}
 					>
 						Credit
 					</button>
 				</div>
+				<div className="h-5"></div>
 			</section>
 			{currentTab && (
-				<section className="flex-1 bg-gray-200 flex-col flex">
+				<section className="flex-1 flex-col flex ">
 					<Table tableName={currentTab} />
 				</section>
 			)}

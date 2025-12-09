@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
-import express from "express";
-import expensesRouter from "./routes/expenses.ts";
-import userRouter from "./routes/user.js";
 import {
 	clerkMiddleware,
 	requireAuth,
 } from "@clerk/express";
+import dotenv from "dotenv";
+import express from "express";
+import expensesRouter from "./routes/expenses";
+import userRouter from "./routes/user.js";
 
 dotenv.config();
 

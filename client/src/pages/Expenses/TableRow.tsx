@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { CircleX, SquarePen, Hamburger, MoreVertical } from "lucide-react";
+import { CircleX, Hamburger, MoreVertical, SquarePen } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import type { TableRowComponentProps } from "../../../../types/table.types";
+import useAuthStore from "../../store/auth.store";
 import useModalStore from "../../store/modal.store";
 import useTableStore from "../../store/table.store";
-import useAuthStore from "../../store/auth.store";
 
 const TableRow = ({ row }: TableRowComponentProps) => {
 	const { openModal } = useModalStore();

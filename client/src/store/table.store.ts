@@ -1,11 +1,19 @@
 import { create } from "zustand";
-import type { TableRowData, TableType, NewRow } from "../../../types/table.types";
+import type {
+	NewRow,
+	TableRowData,
+	TableType,
+} from "../../../types/table.types";
 
 interface TableStore {
 	tables: Record<TableType, Partial<TableRowData>[]>;
+	currentTableTotal: number;
+	expensesTotal: number;
 	addRow: (row: NewRow) => void;
 	deleteRow: (rowId: number) => Promise<void>;
-	getRows: (userId:number) => Promise<void>;
+	getRows: (userId: number) => Promise<void>;
+	calculateTableTotal: (table: TableType) => void;
+	calculateAllExpenses: () => void;
 }
 
 const useTableStore = create<TableStore>()((set, get) => ({
@@ -15,6 +23,8 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		investments: [],
 		credit: [],
 	},
+	currentTableTotal: 0,
+	expensesTotal: 0,
 	addRow: async (row) => {
 		const endpoint = "/api/expenses/addExpense";
 		try {
@@ -60,7 +70,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 			// console.log(userId)
 			const response = await fetch(`/api/expenses/?userId=${userId}`);
 			const rows = await response.json();
-
+			// console.log(JSON.stringify(rows, null, 2))
 			const updatedTable: Record<TableType, Partial<TableRowData>[]> = {
 				fixedPayments: [],
 				investments: [],
@@ -69,7 +79,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 
 			if (rows) {
 				rows.forEach((row: TableRowData) => {
-					const type = row.expenseType?.toLowerCase(); 
+					const type = row.expenseType?.toLowerCase();
 					// console.log(row.expenseType)
 					switch (type) {
 						case "fixedpayments":
@@ -94,6 +104,24 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		} catch (error) {
 			console.log(error);
 		}
+	},
+	updateValue: (value, number) => {
+		return number;
+	},
+	calculateTableTotal: (table) => {
+		const rows = get().tables[table];
+		let total = 0;
+		if (rows) {
+			rows.forEach((row) => {
+				total += row.value;
+			});
+		}
+		set((state) => ({ ...state, currentTableTotal: total }));
+	},
+	calculateAllExpenses: () => {
+		const typesOfTables = Object.values(get().tables)
+		const total = typesOfTables.flat().reduce((acc, expense) => acc + expense.value, 0)
+		set((state) => ({ ...state, expensesTotal: total }));
 	},
 }));
 

@@ -1,16 +1,14 @@
-import TableRow from "./TableRow";
+import { ChevronDown, SquarePlus } from "lucide-react";
+import { useEffect } from "react";
 import type {
+	NewRow,
 	TableComponentProps,
 	TableType,
-	NewRow,
-	TableRowData,
 } from "../../../../types/table.types";
-import useTableStore from "../../store/table.store";
-import { useEffect } from "react";
 import useAuthStore from "../../store/auth.store";
-import { SquarePlus } from "lucide-react";
+import useTableStore from "../../store/table.store";
 import convertToTitle from "../../utils/convertToTitle";
-import { ChevronDown } from "lucide-react";
+import TableRow from "./TableRow";
 
 const Table = ({ tableName }: TableComponentProps) => {
 	const { tables, addRow, getRows } = useTableStore();
@@ -39,13 +37,13 @@ const Table = ({ tableName }: TableComponentProps) => {
 	}, [getRows]);
 
 	return (
-		<div className="p-4 overflow-x-auto flex-1">
-			<header className="flex items-center space-x-4 mb-4">
+		<div className="p-4 overflow-x-auto flex-1 bg-primary">
+			<header className="flex items-center space-x-4 mb-4 bg-white">
 				<h2>{convertToTitle(tableName)}</h2>
 				<button
 					type="button"
 					onClick={() => handleAddRow(tableName)}
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded items-center"
+					className="bg-secondary hover:bg-primary text-white font-bold rounded items-center"
 				>
 					<SquarePlus />
 				</button>
@@ -59,6 +57,7 @@ const Table = ({ tableName }: TableComponentProps) => {
 				{tables[tableName].map((row) => (
 					<TableRow
 						row={row}
+						key={row.id}
 					></TableRow>
 					// <div
 					// 	key={row.id}

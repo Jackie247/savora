@@ -1,4 +1,11 @@
-@layer theme, base, components, utilities;
+/* @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss/utilities.css" layer(utilities); */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: oklch(0.5436 0.0766 189.33);
+  --color-secondary: oklch(0.6199 0.0817 188.93);
+  --color-accent-text: oklch(0.9061 0.0223 193.29);
+}

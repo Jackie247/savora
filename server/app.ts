@@ -1,19 +1,25 @@
+import {
+	clerkMiddleware,
+	requireAuth,
+} from "@clerk/express";
 import dotenv from "dotenv";
 import express from "express";
-import expensesRouter from "./routes/expenses.ts";
+import expensesRouter from "./routes/expenses";
+import userRouter from "./routes/user.js";
 
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
+app.use(clerkMiddleware());
 
 // Routes
-app.get("/", (req, res) => {
-	res.send("Home Page");
-});
-app.use("/api/expenses", expensesRouter);
+app.use("/api/user", requireAuth(), userRouter);
+app.use("/api/expenses", requireAuth(), expensesRouter);
+// app.use("/api/user", userRouter);
 // app.use('/api/expenses', expensesRouter)
 
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

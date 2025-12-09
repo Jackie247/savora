@@ -1,11 +1,19 @@
 import { create } from "zustand";
-import type { TableRowData, TableType } from "../../../types/table.types";
+import type {
+	NewRow,
+	TableRowData,
+	TableType,
+} from "../../../types/table.types";
 
 interface TableStore {
 	tables: Record<TableType, Partial<TableRowData>[]>;
-	addRow: (expenseType: TableType) => void;
-	deleteRow: (expenseType: TableType, rowId: string) => void;
-	getRows: () => void;
+	currentTableTotal: number;
+	expensesTotal: number;
+	addRow: (row: NewRow) => void;
+	deleteRow: (rowId: number) => Promise<void>;
+	getRows: (userId: number) => Promise<void>;
+	calculateTableTotal: (table: TableType) => void;
+	calculateAllExpenses: () => void;
 }
 
 const useTableStore = create<TableStore>()((set, get) => ({
@@ -15,11 +23,12 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		investments: [],
 		credit: [],
 	},
-	addRow: async (table) => {
-		const row = { name: "", value: "", day: "", expenseType: table };
-		const endpoint = "/api/expenses/deleteExpense";
+	currentTableTotal: 0,
+	expensesTotal: 0,
+	addRow: async (row) => {
+		const endpoint = "/api/expenses/addExpense";
 		try {
-			const response = await fetch("/api/expenses/addExpense", {
+			const response = await fetch(endpoint, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(row),
@@ -34,7 +43,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 			console.log("Error:", error);
 		}
 	},
-	deleteRow: async (expenseType, rowId) => {
+	deleteRow: async (rowId) => {
 		const endpoint = "/api/expenses/deleteExpense";
 
 		try {
@@ -43,7 +52,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ expenseType, rowId }),
+				body: JSON.stringify({ rowId }),
 			});
 
 			if (!response) {
@@ -56,11 +65,12 @@ const useTableStore = create<TableStore>()((set, get) => ({
 			console.log("Error:", error);
 		}
 	},
-	getRows: async () => {
+	getRows: async (userId) => {
 		try {
-			const response = await fetch("/api/expenses/");
+			// console.log(userId)
+			const response = await fetch(`/api/expenses/?userId=${userId}`);
 			const rows = await response.json();
-
+			// console.log(JSON.stringify(rows, null, 2))
 			const updatedTable: Record<TableType, Partial<TableRowData>[]> = {
 				fixedPayments: [],
 				investments: [],
@@ -69,8 +79,10 @@ const useTableStore = create<TableStore>()((set, get) => ({
 
 			if (rows) {
 				rows.forEach((row: TableRowData) => {
-					switch (row.expenseType) {
-						case "fixedPayments":
+					const type = row.expenseType?.toLowerCase();
+					// console.log(row.expenseType)
+					switch (type) {
+						case "fixedpayments":
 							updatedTable.fixedPayments.push(row);
 							break;
 						case "investments":
@@ -84,7 +96,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 					}
 				});
 			}
-			console.log("Updated table is: ", JSON.stringify(updatedTable, null, 2));
+			// console.log("Updated table is: ", JSON.stringify(updatedTable, null, 2));
 			set((state) => ({
 				...state,
 				tables: updatedTable,
@@ -92,6 +104,24 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		} catch (error) {
 			console.log(error);
 		}
+	},
+	updateValue: (value, number) => {
+		return number;
+	},
+	calculateTableTotal: (table) => {
+		const rows = get().tables[table];
+		let total = 0;
+		if (rows) {
+			rows.forEach((row) => {
+				total += row.value;
+			});
+		}
+		set((state) => ({ ...state, currentTableTotal: total }));
+	},
+	calculateAllExpenses: () => {
+		const typesOfTables = Object.values(get().tables)
+		const total = typesOfTables.flat().reduce((acc, expense) => acc + expense.value, 0)
+		set((state) => ({ ...state, expensesTotal: total }));
 	},
 }));
 

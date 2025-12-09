@@ -12,8 +12,7 @@ const useExpensesStore = create<ExpenseStore>()((set, get) => ({
         set(() => ({
             currentTab: table
         }))
-    }
-
+    },
 }))
 
 export default useExpensesStore;

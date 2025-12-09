@@ -18,7 +18,7 @@ const Table = ({ tableName }: TableComponentProps) => {
 			expenseType: expenseType,
 			is_recurring: true,
 			// For one-time expenses, set today's date
-			expense_date: new Date(),
+			expense_date: "",
 			// For recurring expenses, default to 1st of month
 			recurring_day: 1,
 			recurring_interval: undefined,

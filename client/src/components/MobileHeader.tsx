@@ -1,13 +1,12 @@
+/* eslint-disable react/react-in-jsx-scope */
+import useAuthStore from "@/store/auth.store";
 import { useState } from "react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
 import { Menu, X } from "lucide-react";
+import { LogoutButton } from "./LogoutButton";
+import { LoginButton } from "./LoginButton";
 
 const MobileHeader = () => {
+  const { session } = useAuthStore();
   const [open, setOpen] = useState(false);
 
   return (
@@ -37,15 +36,9 @@ const MobileHeader = () => {
       </nav>
 
       <div className="hidden md:flex items-center space-x-4">
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
+        <LogoutButton />
       </div>
 
-      {/* Mobile menu toggle */}
       <button
         className="md:hidden"
         onClick={() => setOpen(!open)}
@@ -54,38 +47,43 @@ const MobileHeader = () => {
         {open ? <X size={28} /> : <Menu size={28} />}
       </button>
 
-      {/* Mobile menu drawer */}
       {open && (
-  <div className="fixed inset-0 bg-white z-50 md:hidden flex flex-col">
-    {/* Close button */}
-    <button
-      onClick={() => setOpen(false)}
-      aria-label="Close menu"
-      className="absolute top-4 right-4 p-2"
-    >
-      <X size={28} />
-    </button>
+        <div className="fixed inset-0 bg-white z-50 md:hidden flex flex-col">
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+            className="absolute top-4 right-4 p-2"
+          >
+            <X size={28} />
+          </button>
 
-    <nav className="p-6 ">
-      <ul className="flex flex-col space-y-4">
-        <li><a href="/" onClick={() => setOpen(false)}>Dashboard</a></li>
-        <li><a href="/expenses" onClick={() => setOpen(false)}>Expenses</a></li>
-        <li><a href="/options" onClick={() => setOpen(false)}>Options</a></li>
-        <li><a href="/help" onClick={() => setOpen(false)}>Help</a></li>
-      </ul>
-    </nav>
-
-    <div className="p-6 border-t">
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-    </div>
-  </div>
-)}
-
+          <nav className="p-6 ">
+            <ul className="flex flex-col space-y-4">
+              <li>
+                <a href="/" onClick={() => setOpen(false)}>
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="/expenses" onClick={() => setOpen(false)}>
+                  Expenses
+                </a>
+              </li>
+              <li>
+                <a href="/options" onClick={() => setOpen(false)}>
+                  Options
+                </a>
+              </li>
+              <li>
+                <a href="/help" onClick={() => setOpen(false)}>
+                  Help
+                </a>
+              </li>
+            </ul>
+          </nav>
+          {session ? <LogoutButton /> : <LoginButton />}
+        </div>
+      )}
     </header>
   );
 };

@@ -5,7 +5,6 @@ import {
 import dotenv from "dotenv";
 import express from "express";
 import expensesRouter from "./routes/expenses";
-import userRouter from "./routes/user.js";
 
 dotenv.config();
 
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 // Routes
-app.use("/api/user", requireAuth(), userRouter);
 app.use("/api/expenses", requireAuth(), expensesRouter);
 // app.use("/api/user", userRouter);
 // app.use('/api/expenses', expensesRouter)

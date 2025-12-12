@@ -1,77 +1,40 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { supabase } from "@/lib/supabase/client";
 
 interface AuthStore {
-	currentUserId: number;
-	userExists: boolean;
-	addUser: (email: string | undefined, clerkID: string) => void;
-	findUser: (email: string) => Promise<boolean>;
+	session: any | null;
+	unsubscribe: (() => void) | null;
+
+	setSession: () => Promise<void>;
+	signOut: () => Promise<void>;
 }
 
-const useAuthStore = create<AuthStore>()(
-	persist(
-		(set, get) => ({
-			currentUserId: 0, // default value but should get overwritten on dashboard load
-			userExists: false,
-			addUser: async (email: string | undefined, clerkId: string) => {
-				try {
-					fetch("/api/user/addUser", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ email, clerkId }),
-					});
-				} catch (error) {
-					console.log(error);
-				}
-			},
-			findUser: async (email: string): Promise<boolean> => {
-				console.log("in find user");
-				try {
-					const response = await fetch("/api/user/findUser", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ email }),
-					});
+const useAuthStore = create<AuthStore>()((set, get) => ({
+	session: null,
+	unsubscribe: null,
+	setSession: async () => {
+		// Get initial session
+		const currentSession = await supabase.auth.getSession();
+		console.log(currentSession)
+		set({
+			session: currentSession.data.session
+		});
 
-					if (!response.ok) {
-						throw new Error(
-							`Failed to find user with email ${email}: ${response.status}`,
-						);
-					}
+		const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+			set({
+				session: session
+			})
+		})
 
-					const data = await response.json();
-
-					// Add these debug logs
-					console.log("findUser API response:", data);
-					console.log("data.id:", data.id);
-					console.log("typeof data.id:", typeof data.id);
-
-					if (data) {
-						console.log("Setting currentUserId to:", data.id);
-						set({ currentUserId: Number(data.id), userExists: true });
-
-						// Verify it was actually set
-						const currentState = get();
-						console.log(
-							"After set - currentUserId is now:",
-							currentState.currentUserId,
-						);
-					}
-					return !!data;
-				} catch (error) {
-					console.log(error);
-					return false;
-				}
-			},
-		}),
-		{
-			name: "user-id-storage",
-		},
-	),
-);
+		// cleanup function to prevent memory leaks
+		set({
+			unsubscribe: () => authListener.subscription.unsubscribe(),
+		});
+	},
+	signOut: async () => {
+		await supabase.auth.signOut();
+		set({ session: null });
+	}
+}));
 
 export default useAuthStore;

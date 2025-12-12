@@ -35,17 +35,16 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 
 		try {
-			const { data, error } = await supabase
+			const { error } = await supabase
 				.from('expenses')
 				.insert({
 					...row,
-					user_id: session.user.id // Automatically add user_id
+					user_id: session.user.id // add user_id so we can keep track of expenses for each user
 				})
-				.select(); // Get the inserted row back
 
 			if (error) throw error;
 
-			console.log("Expense added:", data);
+			// console.log("Expense added:", data);
 
 			// Refresh the table data
 			await get().getRows();
@@ -55,23 +54,19 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 	},
 	deleteRow: async (rowId) => {
-		const endpoint = "/api/expenses/deleteExpense";
-
 		try {
-			const response = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ rowId }),
-			});
+			const { error } = await supabase
+				.from('expenses')
+				.delete(
+			)
+				.eq('id', rowId);
 
-			if (!response) {
-				throw new Error(`POST request to ${endpoint} failed`);
-			}
-			const result = await response.json();
+			if (error) throw error;
 
-			console.log("Success", result);
+			// console.log("Row deleted:", data);
+
+			// Refresh the table data
+			await get().getRows();
 		} catch (error) {
 			console.log("Error:", error);
 		}

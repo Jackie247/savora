@@ -8,7 +8,9 @@ const TransctionHistory = () => {
     <section className="p-6 flex flex-col">
       <div className="flex justify-between">
         <h3>Transactions History</h3>
-        <span className="text-xs self-center text-gray-500">See all</span>
+        <span className="text-xs self-center text-gray-500">
+          <a href="/expenses">See all</a>
+        </span>
       </div>
 
       <article>

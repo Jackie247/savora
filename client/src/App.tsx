@@ -7,6 +7,7 @@ import Login from "./pages/Login/Login.tsx";
 import SignUp from "./pages/SignUp/SignUp.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import useAuthStore from "./store/auth.store.ts";
+import Accounts from "./pages/Accounts/Accounts.tsx";
 
 const App = () => {
   const { init } = useAuthStore();
@@ -28,6 +29,14 @@ const App = () => {
         element={
           <ProtectedRoute>
             <Expenses />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/accounts"
+        element={
+          <ProtectedRoute>
+            <Accounts />
           </ProtectedRoute>
         }
       />

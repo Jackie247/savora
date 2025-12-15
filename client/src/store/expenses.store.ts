@@ -6,7 +6,7 @@ export interface ExpenseStore {
     updateCurrentTab: (table: TableType) => void;
 }
 
-const useExpensesStore = create<ExpenseStore>()((set, get) => ({
+const useExpensesStore = create<ExpenseStore>()((set) => ({
     currentTab: "fixedPayments",
     updateCurrentTab: (table) => {
         set(() => ({

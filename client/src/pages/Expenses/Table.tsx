@@ -5,33 +5,31 @@ import type {
   TableComponentProps,
   TableType,
 } from "../../../../types/table.types";
-import useAuthStore from "../../store/auth.store";
 import useTableStore from "../../store/table.store";
 import convertToTitle from "../../utils/convertToTitle";
 import TableRow from "./TableRow";
 
 const Table = ({ tableName }: TableComponentProps) => {
   const { tables, addRow, getRows } = useTableStore();
-  const { session } = useAuthStore();
 
-  const handleAddRow = async (expenseType: TableType) => {
+  const handleAddRow = async (expense_type: TableType) => {
+    // probably dont need this because DB has default values.
     const row: NewRow = {
       name: "",
       value: 0,
-      expense_type: expenseType,
+      expense_type: expense_type,
       is_recurring: true,
       expense_date: null, // For one-time expenses, set today's date
-      recurring_day: 1, // For recurring expenses, default to 1st of month
+      recurring_day: null, // For recurring expenses, default to 1st of month
       recurring_interval: undefined,
     };
-    // if(expenseType === 'variableExpenses'){
-    // 	row.is_recurring = False
-    // }
+
     await addRow(row);
     await getRows();
   };
 
   useEffect(() => {
+    // ran once on component mount, which means tableName gets set once, so need to set it as dependency.
     getRows();
   }, [getRows]);
 
@@ -55,25 +53,6 @@ const Table = ({ tableName }: TableComponentProps) => {
       <div className="bg-white rounded-sm">
         {tables[tableName].map((row) => (
           <TableRow row={row} key={row.id}></TableRow>
-          // <div
-          // 	key={row.id}
-          // 	className="cursor-pointer hover:bg-blue-50 transition-colors"
-          // 	onClick={() => handleEditRow(row.id)}
-          // >
-
-          // 	<span className="py-3">
-          // 		<button
-          // 			onClick={(e) => {
-          // 				e.stopPropagation(); // prevent row click
-          // 				handleDeleteRow(tableName, row.id);
-          // 			}}
-          // 			className="p-1 text-red-500 hover:text-red-700 rounded-full"
-          // 			aria-label="Delete"
-          // 		>
-          // 			<X className="w-4 h-4" />
-          // 		</button>
-          // 	</span>
-          // </div>
         ))}
       </div>
     </div>

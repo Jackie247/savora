@@ -1,4 +1,4 @@
-import type { TableType } from "../../../../types/table.types.ts";
+import type { TableType } from "../../../types/table.types";
 
 const convertToTitle = (tab: TableType) => {
 	switch (tab) {

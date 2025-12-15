@@ -9,13 +9,10 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import useAuthStore from "./store/auth.store.ts";
 
 const App = () => {
-  const { setSession, unsubscribe } = useAuthStore();
+  const { init } = useAuthStore();
 
   useEffect(() => {
-    setSession();
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
+    init();
   }, []);
 
   return (
@@ -23,17 +20,9 @@ const App = () => {
       {/* Public auth routes */}
       <Route path="/log-in" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
-      {/* <Route path="/logout" element={<LogoutRoute />} /> */}
 
       {/* Protected routes */}
-      <Route
-        path="/"
-        element={
-          //   <ProtectedRoute>
-          <Dashboard />
-          //   </ProtectedRoute>
-        }
-      />
+      <Route path="/" element={<Dashboard />} />
       <Route
         path="/expenses"
         element={

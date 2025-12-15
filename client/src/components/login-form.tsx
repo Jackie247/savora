@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 export function LoginForm({
   className,
@@ -34,7 +33,7 @@ export function LoginForm({
       });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
-      useNavigate("/", { replace: true });
+      location.href = "/";
     } catch (error: unknown) {
       console.log("Error encountered while logging in", error);
     }

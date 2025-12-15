@@ -14,6 +14,7 @@ interface TableStore {
 	addRow: (row: NewRow) => void;
 	deleteRow: (rowId: number) => Promise<void>;
 	getRows: () => Promise<void>;
+	updateRow: (row) => Promise<void>;
 	calculateTableTotal: (table: TableType) => void;
 	calculateAllExpenses: () => void;
 }
@@ -29,6 +30,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 
 	addRow: async (row) => {
 		const { session } = useAuthStore.getState();
+
 		if (!session) {
 			console.error('No session found');
 			return;
@@ -72,19 +74,18 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 	},
 	getRows: async () => {
-		const { session } = useAuthStore.getState();
-		if (!session) {
-			console.log('No session found, skipping getRows');
-			return;
-		}
+		const { session, loading } = useAuthStore.getState();
+		console.log(loading)
+		console.log("session is", session)
+		if (loading || !session) return;
 
 		try {
-			// Query Supabase directly - RLS will automatically filter by user
+			console.log("Querying db for rows")
 			const { data: rows, error } = await supabase
-				.from('expenses')
-				.select('*')
-				.eq('user_id', session.user.id)
-				.order('created_at', { ascending: false });
+				.from("expenses")
+				.select("*")
+				.eq("user_id", session.user.id)
+				.order("name", { ascending: true });
 
 			if (error) throw error;
 
@@ -94,35 +95,49 @@ const useTableStore = create<TableStore>()((set, get) => ({
 				credit: [],
 			};
 
-			if (rows) {
-				rows.forEach((row: TableRowData) => {
-					const type = row.expense_type?.toLowerCase();
-
-					switch (type) {
-						case "fixedpayments":
-							updatedTable.fixedPayments.push(row);
-							break;
-						case "investments":
-							updatedTable.investments.push(row);
-							break;
-						case "credit":
-							updatedTable.credit.push(row);
-							break;
-						default:
-							console.log("Unknown expense type:", type);
-					}
-				});
-			}
-
-			set((state) => ({
-				...state,
-				tables: updatedTable,
-			}));
-
-			// Auto-calculate totals after loading
+			rows?.forEach((row: TableRowData) => {
+				switch (row.expense_type?.toLowerCase()) {
+					case "fixedpayments":
+						updatedTable.fixedPayments.push(row);
+						break;
+					case "investments":
+						updatedTable.investments.push(row);
+						break;
+					case "credit":
+						updatedTable.credit.push(row);
+						break;
+				}
+			});
+			console.log("Tables fetched from db, calculating all expenses")
+			set({ tables: updatedTable });
 			get().calculateAllExpenses();
+
+		} catch (err) {
+			console.error("Error getting expenses:", err);
+		}
+	},
+	updateRow: async (row) => {
+		// you can update all values but seems like theres a better way to only update values that have changed
+		const {
+			name,
+			value,
+			expense_type,
+			is_recurring,
+			expense_date,
+			recurring_day,
+			recurring_interval,
+			recurring_day_of_week
+		} = row
+		try {
+			// sort by next date
+			const { error } = await supabase
+				.from('expenses')
+				.update({ name, value, expense_type, is_recurring, expense_date, recurring_day, recurring_interval, recurring_day_of_week })
+				.eq('id', row.id)
+
+			if (error) throw error;
 		} catch (error) {
-			console.error("Error getting expenses:", error);
+			console.log("Error while updating row", error)
 		}
 	},
 	calculateTableTotal: (table) => {
@@ -133,7 +148,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 				total += row.value || 0;
 			});
 		}
-		set((state) => ({ ...state, currentTableTotal: total }));
+		set((state) => ({ ...state, currentTableTotal: total.toFixed(2) }));
 	},
 	calculateAllExpenses: () => {
 		const typesOfTables = Object.values(get().tables);

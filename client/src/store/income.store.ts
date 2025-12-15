@@ -5,7 +5,7 @@ export interface IncomeStore {
     updateCurrentIncome: (num: number) => void
 }
 
-const useIncomeStore = create<IncomeStore>()((set, get) => ({
+const useIncomeStore = create<IncomeStore>()((set) => ({
     currentIncome: 0,
     updateCurrentIncome: (num) => {
         set(() => ({

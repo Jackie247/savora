@@ -9,8 +9,14 @@ export function LoginButton() {
   };
 
   return (
-    <Button onClick={handleLogin} variant="outline">
-      Login
-    </Button>
+    <div className="flex w-full justify-center">
+      <Button
+        className="w-3/4 bg-secondary-foreground text-secondary"
+        onClick={handleLogin}
+        variant="outline"
+      >
+        Login
+      </Button>
+    </div>
   );
 }

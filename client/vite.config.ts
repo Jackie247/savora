@@ -14,7 +14,9 @@ export default defineConfig({
 		},
 	},
 	test: {
-		environment: "jsdom"
+		environment: "jsdom",
+		globals: true, // use APIs globally like Jest https://vitest.dev/config/globals
+		setupFiles: ['./setup-vitest.ts']
 	},
 	server: {
 		proxy: {

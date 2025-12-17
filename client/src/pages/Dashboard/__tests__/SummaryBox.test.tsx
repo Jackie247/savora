@@ -5,13 +5,13 @@ import SummaryBox from "../SummaryBox";
 
 describe("SummaryBox Component", () => {
   it("renders balance, income and expenses values correctly", () => {
-    render(<SummaryBox balance={0} income={0} expenses={0} />);
+    render(<SummaryBox income={1234.5} expenses={99.99} />);
     const balanceValue = screen.getByTestId("balance-value");
     const incomeValue = screen.getByTestId("income-value");
     const expensesValue = screen.getByTestId("expenses-value");
 
-    expect(balanceValue.textContent).toEqual("£0.00");
-    expect(incomeValue.textContent).toEqual("£0.00");
-    expect(expensesValue.textContent).toEqual("£0.00");
+    expect(balanceValue.textContent).toEqual("£1,134.51");
+    expect(incomeValue.textContent).toEqual("£1,234.50");
+    expect(expensesValue.textContent).toEqual("£99.99");
   });
 });

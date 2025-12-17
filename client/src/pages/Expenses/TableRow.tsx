@@ -51,27 +51,29 @@ const TableRow = ({ row }: TableRowComponentProps) => {
   const formattedPrice = row.value ? row.value.toFixed(2) : 0;
 
   return (
-    <div className="flex items-center h-14 border-b border-gray-200 px-2 relative">
+    <div className="flex items-center h-14 border-b border-gray-200 px-2 relative md:my-6">
       {/* Icon */}
       <div className="bg-gray-300 p-2 rounded-sm">
-        <Hamburger />
+        <Hamburger className="md:h-12 md:w-12" />
       </div>
 
-      <div className="flex flex-col flex-1 ml-2">
+      <div className="flex flex-col flex-1 ml-2 md:ml-4 md:text-2xl md:font-medium">
         <span>{row.name ? row.name : "No name"}</span>
-        <span className="text-xs text-gray-400">Subscription</span>
+        <span className="text-xs text-gray-400 md:text-sm md:font-semibold">
+          Subscription
+        </span>
       </div>
 
-      <div className="flex flex-col pr-2">
+      <div className="flex flex-col pr-2 md:text-3xl">
         <span className="text-right">
           <b>£{formattedPrice}</b>
         </span>
         {row.expense_date ? (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 md:text-sm">
             {row.expense_date.split("-").reverse().join("-")}
           </span>
         ) : (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 md:text-sm md:text-right">
             {row.recurring_day && `Due ${formatDay(row.recurring_day)}`}
             {row.recurring_day_of_week &&
               `Due every ${row.recurring_day_of_week}`}
@@ -94,12 +96,12 @@ const TableRow = ({ row }: TableRowComponentProps) => {
           className="p-1"
           aria-label="More actions"
         >
-          <MoreVertical className="w-4 h-4 text-gray-600" />
+          <MoreVertical className="w-4 h-4 text-gray-600 md:w-8 md:h-8" />
         </button>
 
         {menuOpen && (
           <div
-            className="absolute right-0 bg-white border border-gray-200 rounded shadow-md z-10 w-32"
+            className="absolute right-0 bg-white border border-gray-200 rounded shadow-md z-10 w-32 md:text-3xl md:w-50 md:h-30 md:flex md:flex-col md:justify-evenly md:rounded-md"
             style={{}}
           >
             <button
@@ -108,9 +110,10 @@ const TableRow = ({ row }: TableRowComponentProps) => {
                 handleEditRow(row);
                 setMenuOpen(false);
               }}
-              className="flex items-center w-full px-2 py-1 text-left hover:bg-gray-100"
+              className="flex items-center w-full px-2 py-1 text-left hover:bg-gray-100 md:font-medium"
             >
-              <SquarePen className="w-4 h-4 mr-2" /> Edit
+              <SquarePen className="w-4 h-4 mr-2 md:w-8 md:h-8 md:mr-6 " />
+              Edit
             </button>
             <button
               type="button"
@@ -118,9 +121,9 @@ const TableRow = ({ row }: TableRowComponentProps) => {
                 handleDeleteRow(row.id);
                 setMenuOpen(false);
               }}
-              className="flex items-center w-full px-2 py-1 text-left hover:bg-gray-100 text-red-600"
+              className="flex items-center w-full px-2 py-1 text-left hover:bg-gray-100 text-red-600 md:font-medium"
             >
-              <CircleX className="w-4 h-4 mr-2" /> Delete
+              <CircleX className="w-4 h-4 mr-2 md:w-8 md:h-8 md:mr-6" /> Delete
             </button>
           </div>
         )}

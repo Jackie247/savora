@@ -22,26 +22,29 @@ function Expenses() {
   }, [tables, currentTab]);
 
   return (
-    <div className="flex flex-col bg-sidebar-primary min-h-screen">
+    <div className="flex flex-col bg-sidebar-primary min-h-screen ">
+      {/*md:place-self-center md:w-3/4*/}
       <section className="">
         {/* This will contain feature buttons like, pagination for next month, prev month. calendar to go to specific month. Add transaction, etc.*/}
         <a href="/">
-          <div className="flex justify-between p-4 bg-white">
-            <ChevronLeft />
-            <button type="button">Dashboard</button>
+          <div className="flex justify-between p-4 bg-white md:p-8 md:text-2xl">
+            <ChevronLeft className="md:w-8 md:h-8" />
+            <button type="button" className="md:text-2xl">
+              Dashboard
+            </button>
             <button type="button">
-              <Bell />
+              <Bell className="md:w-8 md:h-8" />
             </button>
           </div>
         </a>
 
-        <div className="text-primary-foreground flex flex-col p-6">
-          <span>Total Expenses</span>
-          <span className="text-4xl">
+        <div className="text-primary-foreground flex flex-col p-6 md:px-10 md:pb-2">
+          <span className="md:text-3xl">Total Expenses</span>
+          <span className="text-4xl md:text-6xl md:pt-2">
             <b>£{currentTableTotal}</b>
           </span>
         </div>
-        <div className="flex p-4 space-x-4">
+        <div className="flex p-4 space-x-4 md:px-10 md:text-2xl">
           <button
             type="button"
             value="fixedPayments"
@@ -70,7 +73,7 @@ function Expenses() {
         <div className="h-5"></div>
       </section>
       {currentTab && (
-        <section className="flex-1 flex-col flex ">
+        <section className="flex-1 flex-col flex">
           <Table tableName={currentTab} />
         </section>
       )}

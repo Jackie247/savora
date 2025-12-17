@@ -5,12 +5,14 @@ import type {
   TableComponentProps,
   TableType,
 } from "../../../../types/table.types";
-import useTableStore from "../../store/table.store";
-import convertToTitle from "../../utils/convertToTitle";
+import { useTables, useAddRow, useGetRows } from "../../store/table.store";
+import convertToTitle from "../../lib/convertToTitle";
 import TableRow from "./TableRow";
 
 const Table = ({ tableName }: TableComponentProps) => {
-  const { tables, addRow, getRows } = useTableStore();
+  const tables = useTables();
+  const addRow = useAddRow();
+  const getRows = useGetRows();
 
   const handleAddRow = async (expense_type: TableType) => {
     // probably dont need this because DB has default values.
@@ -34,8 +36,8 @@ const Table = ({ tableName }: TableComponentProps) => {
   }, [getRows]);
 
   return (
-    <div className="p-4 overflow-x-auto flex-1 bg-background">
-      <header className="flex items-center space-x-4 mb-4 bg-white">
+    <div className="p-4 overflow-x-auto flex-1 bg-background md:px-10">
+      <span className="flex items-center space-x-4 mb-4 md:text-3xl md:py-2">
         <h2>{convertToTitle(tableName)}</h2>
         <button
           type="button"
@@ -48,9 +50,9 @@ const Table = ({ tableName }: TableComponentProps) => {
           <span>Sort by</span>
           <ChevronDown />
         </div>
-      </header>
+      </span>
 
-      <div className="bg-white rounded-sm">
+      <div>
         {tables[tableName].map((row) => (
           <TableRow row={row} key={row.id}></TableRow>
         ))}

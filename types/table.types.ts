@@ -1,29 +1,22 @@
 // types/table.ts
-export type TableType = "fixedPayments" | "investments" | "credit";
-
-export interface TableRowData {
+export interface ExpenseData {
 	// stores the base schema for a table row
-	expense_type?: string; // keep track of which table the row is in
 	id: number;
-	name?: string;
-	value?: number;
-	is_recurring?: boolean;
-	expense_date?: string | null;
-	recurring_day?: number; // day of month for recurring expenses
-	recurring_interval?: string; // 'monthly' etc.
-	recurring_day_of_week?: string; // day of week for recurring expenses
+	name: string;
+	value: number;
+	expense_type: string; // keep track of which table the row is in
+	expense_date: string | null;
+	is_recurring: boolean;
+	recurring_day: number | null; // day of month for recurring expenses
+	recurring_interval: string | null; // 'monthly' etc.
+	recurring_day_of_week: string | null; // day of week for recurring expenses
 }
 
-export type NewRow = Omit<TableRowData, "id">;
+// For creating new rows (no id yet)
+export type NewRow = Omit<ExpenseData, 'id'>;
 
-// Props for TableRow component
-export interface TableRowComponentProps {
-	// extends the table row schema by adding functions that can manipulate the row
-	row: TableRowData;
-	onEdit: () => void;
-	onDelete: () => void;
-}
-
+// For updating rows (id required, other fields optional)
+export type UpdateRow = Partial<ExpenseData> & { id: number };
 export interface TableComponentProps {
-	tableName: TableType;
+	tableName: string;
 }

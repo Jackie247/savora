@@ -1,20 +1,21 @@
 import { create } from "zustand";
 import type {
 	NewRow,
-	TableRowData,
-	TableType,
+	ExpenseData,
+	UpdateRow
 } from "../../../types/table.types";
 import { supabase } from '@/lib/supabase/client'
-import useAuthStore from "./auth.store";
+import { useSession, useLoading } from "./auth.store";
 
 interface TableStore {
-	tables: Record<TableType, Partial<TableRowData>[]>;
+	tables: Record<string, ExpenseData[]>;
 	currentTableTotal: number;
 	expensesTotal: number;
 	addRow: (row: NewRow) => void;
 	deleteRow: (rowId: number) => Promise<void>;
 	getRows: () => Promise<void>;
-	calculateTableTotal: (table: TableType) => void;
+	updateRow: (row: UpdateRow) => Promise<void>;
+	calculateTableTotal: (table: string) => void;
 	calculateAllExpenses: () => void;
 }
 
@@ -28,24 +29,24 @@ const useTableStore = create<TableStore>()((set, get) => ({
 	expensesTotal: 0,
 
 	addRow: async (row) => {
-		const { session } = useAuthStore.getState();
+		const session = useSession()
+
 		if (!session) {
 			console.error('No session found');
 			return;
 		}
 
 		try {
-			const { data, error } = await supabase
+			const { error } = await supabase
 				.from('expenses')
 				.insert({
 					...row,
-					user_id: session.user.id // Automatically add user_id
+					user_id: session.user.id // add user_id so we can keep track of expenses for each user
 				})
-				.select(); // Get the inserted row back
 
 			if (error) throw error;
 
-			console.log("Expense added:", data);
+			// console.log("Expense added:", data);
 
 			// Refresh the table data
 			await get().getRows();
@@ -55,79 +56,80 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 	},
 	deleteRow: async (rowId) => {
-		const endpoint = "/api/expenses/deleteExpense";
-
 		try {
-			const response = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ rowId }),
-			});
+			const { error } = await supabase
+				.from('expenses')
+				.delete(
+			)
+				.eq('id', rowId);
 
-			if (!response) {
-				throw new Error(`POST request to ${endpoint} failed`);
-			}
-			const result = await response.json();
+			if (error) throw error;
 
-			console.log("Success", result);
+			// console.log("Row deleted:", data);
+
+			// Refresh the table data
+			await get().getRows();
+
 		} catch (error) {
 			console.log("Error:", error);
 		}
 	},
 	getRows: async () => {
-		const { session } = useAuthStore.getState();
-		if (!session) {
-			console.log('No session found, skipping getRows');
-			return;
-		}
+		const session = useSession()
+		const loading = useLoading()
+		console.log(loading)
+		console.log("session is", session)
+		if (loading || !session) return;
 
 		try {
-			// Query Supabase directly - RLS will automatically filter by user
+			console.log("Querying db for rows")
 			const { data: rows, error } = await supabase
-				.from('expenses')
-				.select('*')
-				.eq('user_id', session.user.id)
-				.order('created_at', { ascending: false });
+				.from("expenses")
+				.select("*")
+				.eq("user_id", session.user.id)
+				.order("name", { ascending: true });
 
 			if (error) throw error;
 
-			const updatedTable: Record<TableType, Partial<TableRowData>[]> = {
+			const updatedTable: Record<string, ExpenseData[]> = {
 				fixedPayments: [],
 				investments: [],
 				credit: [],
 			};
 
-			if (rows) {
-				rows.forEach((row: TableRowData) => {
-					const type = row.expense_type?.toLowerCase();
-
-					switch (type) {
-						case "fixedpayments":
-							updatedTable.fixedPayments.push(row);
-							break;
-						case "investments":
-							updatedTable.investments.push(row);
-							break;
-						case "credit":
-							updatedTable.credit.push(row);
-							break;
-						default:
-							console.log("Unknown expense type:", type);
-					}
-				});
-			}
-
-			set((state) => ({
-				...state,
-				tables: updatedTable,
-			}));
-
-			// Auto-calculate totals after loading
+			rows?.forEach((row: ExpenseData) => {
+				switch (row.expense_type?.toLowerCase()) {
+					case "fixedpayments":
+						updatedTable.fixedPayments.push(row);
+						break;
+					case "investments":
+						updatedTable.investments.push(row);
+						break;
+					case "credit":
+						updatedTable.credit.push(row);
+						break;
+				}
+			});
+			console.log("Tables fetched from db, calculating all expenses")
+			set({ tables: updatedTable });
 			get().calculateAllExpenses();
+
+		} catch (err) {
+			console.error("Error getting expenses:", err);
+		}
+	},
+	updateRow: async (row) => {
+		// you can update all values but seems like theres a better way to only update values that have changed
+		try {
+			// sort by next date
+			const { error } = await supabase
+				.from('expenses')
+				.update(row)
+				.eq('id', row.id)
+
+			if (error) throw error;
 		} catch (error) {
-			console.error("Error getting expenses:", error);
+			console.log("Error while updating row", error)
 		}
 	},
 	calculateTableTotal: (table) => {
@@ -138,7 +140,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 				total += row.value || 0;
 			});
 		}
-		set((state) => ({ ...state, currentTableTotal: total }));
+		set((state) => ({ ...state, currentTableTotal: Number(total.toFixed(2)) }));
 	},
 	calculateAllExpenses: () => {
 		const typesOfTables = Object.values(get().tables);
@@ -147,4 +149,14 @@ const useTableStore = create<TableStore>()((set, get) => ({
 	},
 }));
 
+// Commonly used selectors
+export const useTables = () => useTableStore((state) => state.tables)
+export const useExpensesTotal = () => useTableStore((state) => state.expensesTotal)
+export const useCurrentTableTotal = () => useTableStore((state) => state.currentTableTotal)
+// action selectors
+export const useAddRow = () => useTableStore((state) => state.addRow)
+export const useDeleteRow = () => useTableStore((state) => state.deleteRow)
+export const useGetRows = () => useTableStore((state) => state.getRows)
+export const useCalculateTableTotal = () => useTableStore((state) => state.calculateTableTotal)
+export const useUpdateRow = () => useTableStore((state) => state.updateRow)
 export default useTableStore;

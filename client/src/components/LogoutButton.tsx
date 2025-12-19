@@ -11,8 +11,11 @@ export function LogoutButton() {
   };
 
   return (
-    <Button onClick={handleLogout} variant="outline">
+    <div className="flex w-full  justify-center">
+          <Button className="bg-secondary-foreground text-secondary" onClick={handleLogout} variant="outline">
       Sign Out
     </Button>
+    </div>
+
   );
 }

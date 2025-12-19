@@ -3,41 +3,41 @@ import { useEffect } from "react";
 import type {
   NewRow,
   TableComponentProps,
-  TableType,
 } from "../../../../types/table.types";
-import useAuthStore from "../../store/auth.store";
-import useTableStore from "../../store/table.store";
-import convertToTitle from "../../utils/convertToTitle";
+import { useTables, useAddRow, useGetRows } from "../../store/table.store";
+import convertToTitle from "../../lib/convertToTitle";
 import TableRow from "./TableRow";
 
 const Table = ({ tableName }: TableComponentProps) => {
-  const { tables, addRow, getRows } = useTableStore();
-  const { session } = useAuthStore();
+  const tables = useTables();
+  const addRow = useAddRow();
+  const getRows = useGetRows();
 
-  const handleAddRow = async (expenseType: TableType) => {
-    const row: NewRow = {
+  const handleAddRow = async (expense_type: string) => {
+    // probably dont need this because DB has default values.
+    const newRow: NewRow = {
       name: "",
       value: 0,
-      expense_type: expenseType,
+      expense_type: expense_type,
       is_recurring: true,
       expense_date: null, // For one-time expenses, set today's date
-      recurring_day: 1, // For recurring expenses, default to 1st of month
-      recurring_interval: undefined,
+      recurring_day: null, // For recurring expenses, default to 1st of month
+      recurring_interval: null,
+      recurring_day_of_week: null,
     };
-    // if(expenseType === 'variableExpenses'){
-    // 	row.is_recurring = False
-    // }
-    await addRow(row);
+
+    await addRow(newRow);
     await getRows();
   };
 
   useEffect(() => {
+    // ran once on component mount, which means tableName gets set once, so need to set it as dependency.
     getRows();
   }, [getRows]);
 
   return (
-    <div className="p-4 overflow-x-auto flex-1 bg-background">
-      <header className="flex items-center space-x-4 mb-4 bg-white">
+    <div className="p-4 overflow-x-auto flex-1 bg-background md:px-10">
+      <span className="flex items-center space-x-4 mb-4 md:text-3xl md:py-2">
         <h2>{convertToTitle(tableName)}</h2>
         <button
           type="button"
@@ -50,30 +50,11 @@ const Table = ({ tableName }: TableComponentProps) => {
           <span>Sort by</span>
           <ChevronDown />
         </div>
-      </header>
+      </span>
 
-      <div className="bg-white rounded-sm">
+      <div>
         {tables[tableName].map((row) => (
           <TableRow row={row} key={row.id}></TableRow>
-          // <div
-          // 	key={row.id}
-          // 	className="cursor-pointer hover:bg-blue-50 transition-colors"
-          // 	onClick={() => handleEditRow(row.id)}
-          // >
-
-          // 	<span className="py-3">
-          // 		<button
-          // 			onClick={(e) => {
-          // 				e.stopPropagation(); // prevent row click
-          // 				handleDeleteRow(tableName, row.id);
-          // 			}}
-          // 			className="p-1 text-red-500 hover:text-red-700 rounded-full"
-          // 			aria-label="Delete"
-          // 		>
-          // 			<X className="w-4 h-4" />
-          // 		</button>
-          // 	</span>
-          // </div>
         ))}
       </div>
     </div>

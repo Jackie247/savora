@@ -1,31 +1,28 @@
 import { create } from "zustand";
-import type { ModalFields } from "../../../types/modal.types";
-import useAuthStore from "./auth.store";
-import useTableStore from "./table.store";
+import type { ExpenseData } from "../../../types/table.types"
 
-const initialModalValues: Omit<ModalFields, 'id'> = {
+const initialModalValues: Omit<ExpenseData, 'id'> = {
 	name: "",
 	value: 0,
-	expenseType: "",
+	expense_type: "",
 	is_recurring: false,
-	expense_date: "",
-	recurring_day: "",
-	recurring_interval: "",
-	recurring_day_of_week: "",
+	expense_date: null,
+	recurring_day: null,
+	recurring_interval: null,
+	recurring_day_of_week: null,
 };
 
 export interface ModalStore {
 	isOpen: boolean;
-	modalValues: ModalFields;
+	modalValues: Partial<ExpenseData>;
 	updateModalValue: (field: string, value: string | number | boolean) => void;
-	openModal: (fieldValues: Partial<ModalFields>) => void;
-	resetValue: (field: keyof Omit<ModalFields, 'id'>) => void;
+	openModal: (fieldValues: Partial<ExpenseData>) => void;
+	resetValue: (field: keyof Omit<ExpenseData, 'id'>) => void;
 	resetModal: () => void;
 	closeModal: () => void;
-	submitForm: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const useModalStore = create<ModalStore>()((set, get) => ({
+const useModalStore = create<ModalStore>()((set) => ({
 	isOpen: false,
 	modalValues: initialModalValues,
 	updateModalValue: (field, value) => {
@@ -36,7 +33,7 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 			},
 		}));
 	},
-	openModal: (fieldValues: Partial<ModalFields>) =>
+	openModal: (fieldValues: Partial<ExpenseData>) =>
 		set((state) => ({
 			isOpen: true,
 			modalValues: {
@@ -54,37 +51,14 @@ const useModalStore = create<ModalStore>()((set, get) => ({
 			},
 		})),
 	resetModal: () => set({ modalValues: initialModalValues }),
-	submitForm: async (e) => {
-		e.preventDefault();
-
-		const state = get()
-		if(state.modalValues.is_recurring){
-			state.resetValue("expense_date")	
-		}else{
-			state.resetValue("recurring_day")
-			state.resetValue("recurring_day_of_week")
-		}
-		
-		const payload = get().modalValues;
-		
-		try {
-			const response = await fetch("/api/expenses/editExpense", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-			});
-			if (!response) {
-				throw new Error("Network response is not OK");
-			}
-			await response.json();
-			get().closeModal();
-			useTableStore.getState().getRows(useAuthStore.getState().currentUserId);
-		} catch (error) {
-			console.log("Error:", error);
-		}
-	},
 }));
+
+export const useIsOpen = () => useModalStore((state) => state.isOpen)
+export const useModalValues = () => useModalStore((state) => state.modalValues)
+export const useUpdateModalValue = () => useModalStore((state) => state.updateModalValue)
+export const useOpenModal = () => useModalStore((state) => state.openModal)
+export const useCloseModal = () => useModalStore((state) => state.closeModal)
+export const useResetValue = () => useModalStore((state) => state.resetValue)
+export const useResetModal = () => useModalStore((state) => state.resetModal)
 
 export default useModalStore;

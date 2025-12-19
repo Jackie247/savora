@@ -1,173 +1,228 @@
-import { useState } from "react";
 import DayOfMonthPicker from "../../components/DayOfMonthPicker";
-import DayOfWeekPicker from "../../components/DayOfWeekPicker";
+// import DayOfWeekPicker from "../../components/DayOfWeekPicker";
 import ModalField from "../../components/ModalField";
-import useModalStore from "../../store/modal.store";
-
+import {
+  useModalValues,
+  useResetModal,
+  useCloseModal,
+  useUpdateModalValue,
+} from "../../store/modal.store";
+import { type UpdateRow } from "../../../../types/table.types";
+import { useUpdateRow, useGetRows } from "@/store/table.store";
+import { type FormEvent } from "react";
+// import { useState } from "react";
 const EditRowModal = () => {
-	const { modalValues, resetModal, closeModal, updateModalValue, submitForm } =
-		useModalStore();
-	const [isRecurring, setIsRecurring] = useState(modalValues.is_recurring);
-	const [interval, setInterval] = useState(
-		modalValues.recurring_interval || "daily",
-	);
-	const [weeklyDay, setWeeklyDay] = useState(
-		modalValues.recurring_day_of_week || "monday",
-	);
-	const intervalOptions = [
-		{ value: "daily", label: "Daily" },
-		{ value: "weekly", label: "Weekly" },
-		{ value: "monthly", label: "Monthly" },
-	];
+  // This modal pops up when editing a row
+  // Selectors to grab pieces of state from the useModalStore
+  const modalValues = useModalValues();
+  const resetModal = useResetModal();
+  const closeModal = useCloseModal();
+  const updateModalValue = useUpdateModalValue();
+  // Action selectors to update the UI after editing rows.
+  const updateRow = useUpdateRow();
+  const getRows = useGetRows();
 
-	const weeklyOptions = [
-		{ value: "monday", label: "Monday" },
-		{ value: "tuesday", label: "Tuesday" },
-		{ value: "wednesday", label: "Wednesday" },
-		{ value: "thursday", label: "Thursday" },
-		{ value: "friday", label: "Friday" },
-		{ value: "saturday", label: "Saturday" },
-		{ value: "sunday", label: "Sunday" },
-	];
+  // These interval options are displayed when expense is set to a recurring expense
+  const intervalOptions = [
+    { value: "daily", label: "Daily" },
+    { value: "weekly", label: "Weekly" },
+    { value: "monthly", label: "Monthly" },
+  ];
 
-	return (
-		<div className="fixed inset-0 z-10 flex items-center justify-center bg-black/50 p-6">
-			<div className="bg-white shadow-lg p-6 w-full ">
-				<div className="flex justify-between align-middle mb-4">
-					<h2 className="text-lg font-semibold">Edit Row</h2>
-					<button type="button" onClick={closeModal}>
-						X
-					</button>
-				</div>
-				<form
-					action="/api/expenses/editExpense"
-					method="POST"
-					onSubmit={submitForm}
-				>
-					<ModalField
-						type="select"
-						label="Type of Expense"
-						options={[
-							{ value: "fixedPayments", label: "Fixed Payments" },
-							{ value: "investments", label: "Investments" },
-							{ value: "credit", label: "Credit" },
-						]}
-						field="expenseType"
-						value={modalValues.expenseType}
-						updateModalValue={updateModalValue}
-					/>
-					<ModalField
-						label="Name"
-						value={modalValues.name || ""}
-						updateModalValue={updateModalValue}
-						field="name"
-					></ModalField>
-					<ModalField
-						label="Value"
-						value={modalValues.value || ""}
-						updateModalValue={updateModalValue}
-						field="value"
-					></ModalField>
+  // Options for weekly recurring expense
+  const weeklyOptions = [
+    { value: "monday", label: "Monday" },
+    { value: "tuesday", label: "Tuesday" },
+    { value: "wednesday", label: "Wednesday" },
+    { value: "thursday", label: "Thursday" },
+    { value: "friday", label: "Friday" },
+    { value: "saturday", label: "Saturday" },
+    { value: "sunday", label: "Sunday" },
+  ];
 
-					<div className="mb-4 flex justify-between">
-						{isRecurring ? (
-							<div className="mb-4">
-								<label
-									htmlFor="recurring_interval-input"
-									className="block text-sm font-medium text-gray-700"
-								>
-									Recurring Interval
-								</label>
+  const isRecurring = modalValues.is_recurring;
+  const interval = modalValues.recurring_interval;
+  // const weeklyDay = modalValues.recurring_day_of_week;
 
-								<select
-									id="recurring_interval-input"
-									value={modalValues.recurring_interval as string}
-									onChange={(e) => {
-										updateModalValue("recurring_interval", e.target.value);
-										setInterval(e.target.value);
-									}}
-									className="mt-1 p-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
-								>
-									{intervalOptions?.map((option) => (
-										<option key={option.value} value={option.value}>
-											{option.label}
-										</option>
-									))}
-								</select>
-							</div>
-						) : (
-							<ModalField
-								label="Expense Date"
-								value={modalValues.expense_date}
-								updateModalValue={updateModalValue}
-								field="expense_date"
-								type="date"
-							></ModalField>
-						)}
-						<ModalField
-							label="Recurring"
-							value={modalValues.is_recurring || false}
-							updateModalValue={updateModalValue}
-							setIsRecurring={setIsRecurring}
-							field="is_recurring"
-							type="checkbox"
-						></ModalField>
-					</div>
+  const sanitizeValues = (values: UpdateRow) => {
+    const cleaned: UpdateRow = { ...values };
 
-					{isRecurring && interval === "monthly" && (
-						<DayOfMonthPicker
-							recurringDay={modalValues.recurring_day}
-							updateModalValue={updateModalValue}
-						/>
-					)}
-					{isRecurring && interval === "weekly" && (
-						<div className="mb-4">
-							<div className="flex justify-center">
-								<label
-									htmlFor="day-week-picker"
-									className="text-sm font-medium text-gray-700"
-								>
-									Day:
-								</label>
+    // non-recurring
+    if (!values.is_recurring) {
+      cleaned.recurring_day = null;
+      cleaned.recurring_day_of_week = null;
+      cleaned.recurring_interval = null;
+      return cleaned;
+    }
 
-								<select
-									id="day-week-picker"
-									value={modalValues.recurring_day_of_week as string}
-									onChange={(e) => {
-										updateModalValue("recurring_day_of_week", e.target.value);
-										setWeeklyDay(e.target.value);
-									}}
-									className="mt-1 p-1 block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
-								>
-									{weeklyOptions?.map((option) => (
-										<option key={option.value} value={option.value}>
-											{option.label}
-										</option>
-									))}
-								</select>
-							</div>
-						</div>
-					)}
+    // recurring: interval required
+    if (values.recurring_interval === "monthly") {
+      cleaned.expense_date = null;
+      cleaned.recurring_day_of_week = null;
+      return cleaned;
+    }
 
-					<div className="flex justify-between">
-						<button
-							type="submit"
-							className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-						>
-							Update
-						</button>
-						<button
-							type="button"
-							className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-							onClick={resetModal}
-						>
-							Clear
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
+    if (values.recurring_interval === "weekly") {
+      cleaned.expense_date = null;
+      cleaned.recurring_day = null;
+      return cleaned;
+    }
+
+    // daily or unknown
+    cleaned.recurring_interval = "daily";
+    cleaned.expense_date = null;
+    cleaned.recurring_day = null;
+    cleaned.recurring_day_of_week = null;
+    return cleaned;
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Type guard: ensure we have an id for updates
+    if (!modalValues.id) {
+      console.error("Cannot update row without an id");
+      return;
+    }
+
+    const cleanedModalValues = sanitizeValues(modalValues as UpdateRow);
+
+    await updateRow(cleanedModalValues);
+    closeModal();
+    getRows();
+  };
+
+  return (
+    <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/50 p-6">
+      <div className="bg-white shadow-lg p-6 w-full ">
+        <div className="flex justify-between align-middle mb-4">
+          <h2 className="text-lg font-semibold">Edit Row</h2>
+          <button type="button" onClick={closeModal}>
+            X
+          </button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <ModalField
+            type="select"
+            label="Type of Expense"
+            options={[
+              { value: "fixedPayments", label: "Fixed Payments" },
+              { value: "investments", label: "Investments" },
+              { value: "credit", label: "Credit" },
+            ]}
+            field="expense_type"
+            value={modalValues.expense_type}
+            updateModalValue={updateModalValue}
+          />
+          <ModalField
+            label="Name"
+            value={modalValues.name || ""}
+            updateModalValue={updateModalValue}
+            field="name"
+          ></ModalField>
+          <ModalField
+            label="Value"
+            value={modalValues.value || ""}
+            updateModalValue={updateModalValue}
+            field="value"
+          ></ModalField>
+
+          <div className="mb-4 flex justify-between">
+            {isRecurring ? (
+              <div className="mb-4">
+                <label
+                  htmlFor="recurring_interval-input"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Recurring Interval
+                </label>
+
+                <select
+                  id="recurring_interval-input"
+                  value={modalValues.recurring_interval as string}
+                  onChange={(e) => {
+                    updateModalValue("recurring_interval", e.target.value);
+                  }}
+                  className="mt-1 p-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
+                >
+                  {intervalOptions?.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <ModalField
+                label="Expense Date"
+                value={modalValues.expense_date}
+                updateModalValue={updateModalValue}
+                field="expense_date"
+                type="date"
+              ></ModalField>
+            )}
+            <ModalField
+              label="Recurring"
+              value={modalValues.is_recurring || false}
+              updateModalValue={updateModalValue}
+              field="is_recurring"
+              type="checkbox"
+            ></ModalField>
+          </div>
+
+          {isRecurring && interval === "monthly" && (
+            <DayOfMonthPicker
+              recurringDay={modalValues.recurring_day}
+              updateModalValue={updateModalValue}
+            />
+          )}
+          {isRecurring && interval === "weekly" && (
+            <div className="mb-4">
+              <div className="flex justify-center">
+                <label
+                  htmlFor="day-week-picker"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Day:
+                </label>
+
+                <select
+                  id="day-week-picker"
+                  value={modalValues.recurring_day_of_week as string}
+                  onChange={(e) => {
+                    updateModalValue("recurring_day_of_week", e.target.value);
+                  }}
+                  className="mt-1 p-1 block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 max-h-8 overflow-y-auto"
+                >
+                  {weeklyOptions?.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+              onClick={resetModal}
+            >
+              Clear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default EditRowModal;

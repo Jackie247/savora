@@ -22,7 +22,7 @@ export const addExpense = async (req: Request, res: Response) => {
 		const {
 			name,
 			value,
-			expenseType,
+			expense_type,
 			is_recurring,
 			expense_date,
 			recurring_day,
@@ -40,7 +40,7 @@ export const addExpense = async (req: Request, res: Response) => {
 				return res.status(400).json({ error: "Invalid numeric value" });
 			}
 		}
-		if (!expenseType) {
+		if (!expense_type) {
 			return res.status(400).json({ error: "Missing expense type" });
 		}
 
@@ -49,7 +49,7 @@ export const addExpense = async (req: Request, res: Response) => {
 			value,
 			is_recurring,
 			user_id,
-			expenseType,
+			expense_type,
 			expense_date,
 			recurring_day,
 			recurring_interval,
@@ -68,7 +68,7 @@ export const editExpense = async (req: Request, res: Response) => {
 			id,
 			name,
 			value,
-			expenseType,
+			expense_type,
 			is_recurring,
 			expense_date,
 			recurring_day,
@@ -84,7 +84,7 @@ export const editExpense = async (req: Request, res: Response) => {
 				return res.status(400).json({ error: "Invalid numeric value" });
 			}
 		}
-		if (!expenseType) {
+		if (!expense_type) {
 			return res.status(400).json({ error: "Missing expense type" });
 		}
 
@@ -94,7 +94,7 @@ export const editExpense = async (req: Request, res: Response) => {
 			id,
 			name,
 			value,
-			expenseType,
+			expense_type,
 			is_recurring,
 			expenseDate,
 			recurring_day,

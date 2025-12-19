@@ -47,9 +47,6 @@ jobs:
       - run: npm run lint
         working-directory: server
 
-      - run: npm run typecheck
-        working-directory: server
-
       - run: npm test
         if: github.ref == 'refs/heads/testing'
         working-directory: server

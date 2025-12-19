@@ -1,11 +1,11 @@
 import DayOfMonthPicker from "../../components/DayOfMonthPicker";
-import DayOfWeekPicker from "../../components/DayOfWeekPicker";
+// import DayOfWeekPicker from "../../components/DayOfWeekPicker";
 import ModalField from "../../components/ModalField";
 import useModalStore from "../../store/modal.store";
 import useTableStore from "@/store/table.store";
-import { useState } from "react";
+// import { useState } from "react";
 const EditRowModal = () => {
-  const { modalValues, resetModal, closeModal, updateModalValue, resetValue } =
+  const { modalValues, resetModal, closeModal, updateModalValue } =
     useModalStore();
 
   const { updateRow, getRows } = useTableStore();
@@ -28,7 +28,7 @@ const EditRowModal = () => {
 
   const isRecurring = modalValues.is_recurring;
   const interval = modalValues.recurring_interval;
-  const weeklyDay = modalValues.recurring_day_of_week;
+  // const weeklyDay = modalValues.recurring_day_of_week;
 
   const sanitizeValues = (values: typeof modalValues) => {
     const next = { ...values };

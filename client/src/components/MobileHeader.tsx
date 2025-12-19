@@ -10,7 +10,10 @@ const MobileHeader = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="flex justify-between items-center w-full p-6 bg-white shadow-md relative">
+    <header
+      data-testid="mobile-header"
+      className="flex justify-between items-center w-full p-6 bg-white shadow-md relative"
+    >
       <div id="logo">
         <a href="/" className="text-xl font-bold">
           Savora
@@ -18,6 +21,7 @@ const MobileHeader = () => {
       </div>
 
       <button
+        type="button"
         className="md:hidden"
         onClick={() => setOpen(!open)}
         aria-label="Toggle menu"
@@ -29,6 +33,7 @@ const MobileHeader = () => {
         <div className="fixed inset-0 z-50 md:hidden flex flex-col">
           <div className="bg-background">
             <button
+              type="button"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
               className="absolute top-4 right-4 p-2"

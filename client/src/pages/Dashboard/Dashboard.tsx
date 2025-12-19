@@ -5,9 +5,10 @@ import MobileHeader from "../../components/MobileHeader";
 import useTableStore from "../../store/table.store";
 import SummaryBox from "./SummaryBox";
 import WelcomeCard from "./WelcomeCard";
-import TransctionHistory from "./TransactionHistory";
+import TransctionHistory from "./TransactionsHistory";
 import useAuthStore from "@/store/auth.store";
 import UpcomingTransactions from "./UpcomingTransactions";
+import TransactionBreakdown from "./TransactionsBreakdown";
 
 function Dashboard() {
   const { getRows, expensesTotal } = useTableStore();
@@ -17,10 +18,10 @@ function Dashboard() {
     if (!loading && session) {
       getRows();
     }
-  }, [loading, session]);
+  }, [loading, session, getRows]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <div className="block md:hidden">
         <MobileHeader />
       </div>
@@ -29,13 +30,17 @@ function Dashboard() {
         <Header />
       </div>
 
-      <div className="flex-1 bg-gray-50">
+      <div className="flex-1 ">
         <WelcomeCard />
         <div className="relative z-10 -mt-60 flex justify-center">
-          <SummaryBox balance={0} income={0} expenses={expensesTotal} />
+          <SummaryBox income={0} expenses={expensesTotal} />
         </div>
         <UpcomingTransactions />
-        <TransctionHistory />
+
+        <div className="md:flex md:w-full">
+          <TransactionBreakdown></TransactionBreakdown>
+          <TransctionHistory />
+        </div>
       </div>
     </div>
   );

@@ -6,15 +6,18 @@ import { useEffect } from "react";
 import Login from "./pages/Login/Login.tsx";
 import SignUp from "./pages/SignUp/SignUp.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
-import useAuthStore from "./store/auth.store.ts";
+import { useInit } from "./store/auth.store.ts";
 import Accounts from "./pages/Accounts/Accounts.tsx";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const App = () => {
-  const { init } = useAuthStore();
+  const init = useInit();
 
   useEffect(() => {
     init();
-  }, []);
+  }, [init]);
 
   return (
     <Routes>

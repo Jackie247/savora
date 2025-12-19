@@ -1,9 +1,9 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Bell, ChevronLeft } from "lucide-react";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import useAccountsStore from "../../store/accounts.store.ts";
 import useModalStore from "../../store/modal.store.ts";
-import useTableStore from "../../store/table.store.ts";
+// import useTableStore from "../../store/table.store.ts";
 import EditRowModal from "../Expenses/EditRowModal.tsx";
 
 function Accounts() {
@@ -14,8 +14,6 @@ function Accounts() {
     console.log(e.target.value);
     updateCurrentTab(e.target.value);
   };
-
-  useEffect(() => {}, [currentTab]);
 
   return (
     <div className="flex flex-col bg-sidebar-primary min-h-screen">

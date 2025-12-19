@@ -1,16 +1,27 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Bell, ChevronLeft } from "lucide-react";
 import { useEffect } from "react";
-import useExpensesStore from "../../store/expenses.store.ts";
+import {
+  useCurrentTab,
+  useUpdateCurrentTab,
+} from "../../store/expenses.store.ts";
 import useModalStore from "../../store/modal.store.ts";
-import useTableStore from "../../store/table.store.ts";
+import {
+  useTables,
+  useCurrentTableTotal,
+  useCalculateTableTotal,
+} from "../../store/table.store.ts";
 import EditRowModal from "./EditRowModal.tsx";
 import Table from "./Table.tsx";
 
 function Expenses() {
   const { isOpen } = useModalStore();
-  const { currentTab, updateCurrentTab } = useExpensesStore();
-  const { tables, currentTableTotal, calculateTableTotal } = useTableStore();
+  const currentTab = useCurrentTab();
+  const updateCurrentTab = useUpdateCurrentTab();
+
+  const tables = useTables();
+  const currentTableTotal = useCurrentTableTotal();
+  const calculateTableTotal = useCalculateTableTotal();
 
   const handleTabSelect = (e) => {
     console.log(e.target.value);
@@ -18,8 +29,10 @@ function Expenses() {
   };
 
   useEffect(() => {
-    calculateTableTotal(currentTab);
-  }, [tables, currentTab]);
+    if (tables && tables[currentTab]?.length > 0) {
+      calculateTableTotal(currentTab);
+    }
+  }, [currentTab, calculateTableTotal, tables]);
 
   return (
     <div className="flex flex-col bg-sidebar-primary min-h-screen ">

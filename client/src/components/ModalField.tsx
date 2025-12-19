@@ -7,7 +7,7 @@ interface ModalFieldProps {
   type?: string;
   field: string;
   value: string | number | boolean;
-  updateModalValue: (field: string, value: any) => void;
+  updateModalValue: (field: string, value: string | number | boolean) => void;
   // setIsRecurring?: (isRecurring: boolean) => void;
   options?: Option[];
   label?: string;

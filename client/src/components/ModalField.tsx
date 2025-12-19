@@ -6,7 +6,7 @@ interface Option {
 interface ModalFieldProps {
   type?: string;
   field: string;
-  value: string | number | boolean;
+  value: string | number | boolean | undefined | null;
   updateModalValue: (field: string, value: string | number | boolean) => void;
   // setIsRecurring?: (isRecurring: boolean) => void;
   options?: Option[];

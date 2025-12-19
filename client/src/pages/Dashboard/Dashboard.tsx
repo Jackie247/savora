@@ -2,17 +2,19 @@
 import { useEffect } from "react";
 import Header from "../../components/Header";
 import MobileHeader from "../../components/MobileHeader";
-import useTableStore from "../../store/table.store";
+import { useExpensesTotal, useGetRows } from "../../store/table.store";
 import SummaryBox from "./SummaryBox";
 import WelcomeCard from "./WelcomeCard";
 import TransctionHistory from "./TransactionsHistory";
-import useAuthStore from "@/store/auth.store";
+import { useSession, useLoading } from "@/store/auth.store";
 import UpcomingTransactions from "./UpcomingTransactions";
 import TransactionBreakdown from "./TransactionsBreakdown";
 
 function Dashboard() {
-  const { getRows, expensesTotal } = useTableStore();
-  const { session, loading } = useAuthStore();
+  const getRows = useGetRows();
+  const expensesTotal = useExpensesTotal();
+  const session = useSession();
+  const loading = useLoading();
 
   useEffect(() => {
     if (!loading && session) {
@@ -31,7 +33,7 @@ function Dashboard() {
       </div>
 
       <div className="flex-1 ">
-        <WelcomeCard />
+        <WelcomeCard firstName={"John"} lastName={"Doe"} />
         <div className="relative z-10 -mt-60 flex justify-center">
           <SummaryBox income={0} expenses={expensesTotal} />
         </div>

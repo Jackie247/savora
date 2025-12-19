@@ -5,7 +5,7 @@ import {
   useCurrentTab,
   useUpdateCurrentTab,
 } from "../../store/expenses.store.ts";
-import useModalStore from "../../store/modal.store.ts";
+import { useIsOpen } from "../../store/modal.store.ts";
 import {
   useTables,
   useCurrentTableTotal,
@@ -13,9 +13,9 @@ import {
 } from "../../store/table.store.ts";
 import EditRowModal from "./EditRowModal.tsx";
 import Table from "./Table.tsx";
-
+import { type MouseEvent } from "react";
 function Expenses() {
-  const { isOpen } = useModalStore();
+  const isOpen = useIsOpen();
   const currentTab = useCurrentTab();
   const updateCurrentTab = useUpdateCurrentTab();
 
@@ -23,9 +23,9 @@ function Expenses() {
   const currentTableTotal = useCurrentTableTotal();
   const calculateTableTotal = useCalculateTableTotal();
 
-  const handleTabSelect = (e) => {
-    console.log(e.target.value);
-    updateCurrentTab(e.target.value);
+  const handleTabSelect = (e: MouseEvent<HTMLButtonElement>) => {
+    console.log(e.currentTarget.value);
+    updateCurrentTab(e.currentTarget.value);
   };
 
   useEffect(() => {

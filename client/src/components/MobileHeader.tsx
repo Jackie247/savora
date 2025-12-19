@@ -1,12 +1,12 @@
 /* eslint-disable react/react-in-jsx-scope */
-import useAuthStore from "@/store/auth.store";
+import { useSession } from "@/store/auth.store";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LogoutButton } from "./LogoutButton";
 import { LoginButton } from "./LoginButton";
 
 const MobileHeader = () => {
-  const { session } = useAuthStore();
+  const session = useSession();
   const [open, setOpen] = useState(false);
 
   return (

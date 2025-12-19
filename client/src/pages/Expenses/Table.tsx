@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import type {
   NewRow,
   TableComponentProps,
-  TableType,
 } from "../../../../types/table.types";
 import { useTables, useAddRow, useGetRows } from "../../store/table.store";
 import convertToTitle from "../../lib/convertToTitle";
@@ -14,19 +13,20 @@ const Table = ({ tableName }: TableComponentProps) => {
   const addRow = useAddRow();
   const getRows = useGetRows();
 
-  const handleAddRow = async (expense_type: TableType) => {
+  const handleAddRow = async (expense_type: string) => {
     // probably dont need this because DB has default values.
-    const row: NewRow = {
+    const newRow: NewRow = {
       name: "",
       value: 0,
       expense_type: expense_type,
       is_recurring: true,
       expense_date: null, // For one-time expenses, set today's date
       recurring_day: null, // For recurring expenses, default to 1st of month
-      recurring_interval: undefined,
+      recurring_interval: null,
+      recurring_day_of_week: null,
     };
 
-    await addRow(row);
+    await addRow(newRow);
     await getRows();
   };
 

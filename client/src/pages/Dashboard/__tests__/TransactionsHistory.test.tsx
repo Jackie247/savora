@@ -2,8 +2,8 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import TransactionsHistory from "../TransactionsHistory";
-import NetflixLogo from "../../../assets/icons/netflix-logo.svg?react";
-import SpotifyLogo from "../../../assets/icons/spotify-logo.svg?react";
+import NetflixLogo from "../../../assets/icons/netflix-logo.svg";
+import SpotifyLogo from "../../../assets/icons/spotify-logo.svg";
 import { useTransactionsStore } from "../../../store/transactions.store";
 
 describe("TransactionsHistory Component", () => {

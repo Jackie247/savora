@@ -1,9 +1,8 @@
 import { create } from "zustand";
-import type { TableType } from "../../../types/table.types";
 
 export interface ExpenseStore {
-    currentTab: TableType
-    updateCurrentTab: (table: TableType) => void;
+    currentTab: string
+    updateCurrentTab: (table: string) => void;
 }
 
 const useExpensesStore = create<ExpenseStore>()((set) => ({

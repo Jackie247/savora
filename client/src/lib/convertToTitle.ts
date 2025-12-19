@@ -1,6 +1,4 @@
-import type { TableType } from "../../../types/table.types";
-
-const convertToTitle = (tab: TableType) => {
+const convertToTitle = (tab: string) => {
 	switch (tab) {
 		case "fixedPayments":
 			return "Fixed Payments";

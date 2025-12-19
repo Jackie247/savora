@@ -1,21 +1,21 @@
 import { create } from "zustand";
 import type {
 	NewRow,
-	TableRowData,
-	TableType,
+	ExpenseData,
+	UpdateRow
 } from "../../../types/table.types";
 import { supabase } from '@/lib/supabase/client'
-import useAuthStore from "./auth.store";
+import { useSession, useLoading } from "./auth.store";
 
 interface TableStore {
-	tables: Record<TableType, Partial<TableRowData>[]>;
+	tables: Record<string, ExpenseData[]>;
 	currentTableTotal: number;
 	expensesTotal: number;
 	addRow: (row: NewRow) => void;
 	deleteRow: (rowId: number) => Promise<void>;
 	getRows: () => Promise<void>;
-	updateRow: (row) => Promise<void>;
-	calculateTableTotal: (table: TableType) => void;
+	updateRow: (row: UpdateRow) => Promise<void>;
+	calculateTableTotal: (table: string) => void;
 	calculateAllExpenses: () => void;
 }
 
@@ -29,7 +29,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 	expensesTotal: 0,
 
 	addRow: async (row) => {
-		const { session } = useAuthStore.getState();
+		const session = useSession()
 
 		if (!session) {
 			console.error('No session found');
@@ -75,7 +75,8 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 	},
 	getRows: async () => {
-		const { session, loading } = useAuthStore.getState();
+		const session = useSession()
+		const loading = useLoading()
 		console.log(loading)
 		console.log("session is", session)
 		if (loading || !session) return;
@@ -90,13 +91,13 @@ const useTableStore = create<TableStore>()((set, get) => ({
 
 			if (error) throw error;
 
-			const updatedTable: Record<TableType, Partial<TableRowData>[]> = {
+			const updatedTable: Record<string, ExpenseData[]> = {
 				fixedPayments: [],
 				investments: [],
 				credit: [],
 			};
 
-			rows?.forEach((row: TableRowData) => {
+			rows?.forEach((row: ExpenseData) => {
 				switch (row.expense_type?.toLowerCase()) {
 					case "fixedpayments":
 						updatedTable.fixedPayments.push(row);
@@ -119,21 +120,11 @@ const useTableStore = create<TableStore>()((set, get) => ({
 	},
 	updateRow: async (row) => {
 		// you can update all values but seems like theres a better way to only update values that have changed
-		const {
-			name,
-			value,
-			expense_type,
-			is_recurring,
-			expense_date,
-			recurring_day,
-			recurring_interval,
-			recurring_day_of_week
-		} = row
 		try {
 			// sort by next date
 			const { error } = await supabase
 				.from('expenses')
-				.update({ name, value, expense_type, is_recurring, expense_date, recurring_day, recurring_interval, recurring_day_of_week })
+				.update(row)
 				.eq('id', row.id)
 
 			if (error) throw error;
@@ -149,7 +140,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 				total += row.value || 0;
 			});
 		}
-		set((state) => ({ ...state, currentTableTotal: total.toFixed(2) }));
+		set((state) => ({ ...state, currentTableTotal: Number(total.toFixed(2)) }));
 	},
 	calculateAllExpenses: () => {
 		const typesOfTables = Object.values(get().tables);
@@ -167,5 +158,5 @@ export const useAddRow = () => useTableStore((state) => state.addRow)
 export const useDeleteRow = () => useTableStore((state) => state.deleteRow)
 export const useGetRows = () => useTableStore((state) => state.getRows)
 export const useCalculateTableTotal = () => useTableStore((state) => state.calculateTableTotal)
-
+export const useUpdateRow = () => useTableStore((state) => state.updateRow)
 export default useTableStore;

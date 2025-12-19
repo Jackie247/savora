@@ -1,13 +1,17 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { CircleX, Hamburger, MoreVertical, SquarePen } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { TableRowComponentProps } from "../../../../types/table.types";
-import useModalStore from "../../store/modal.store";
-import useTableStore from "../../store/table.store";
+import type { ExpenseData } from "../../../../types/table.types";
+import { useOpenModal } from "../../store/modal.store";
+import { useDeleteRow, useGetRows } from "../../store/table.store";
 
-const TableRow = ({ row }: TableRowComponentProps) => {
-  const { openModal } = useModalStore();
-  const { getRows, deleteRow } = useTableStore();
+interface TableRowProps {
+  row: ExpenseData;
+}
+const TableRow = ({ row }: TableRowProps) => {
+  const openModal = useOpenModal();
+  const getRows = useGetRows();
+  const deleteRow = useDeleteRow();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

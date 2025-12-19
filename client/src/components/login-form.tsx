@@ -19,23 +19,30 @@ export function LoginForm({
   // store the user entered input in local state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     // form is submitted,
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       // Update this route to redirect to an authenticated route. The user already has an active session.
       location.href = "/";
     } catch (error: unknown) {
-      console.log("Error encountered while logging in", error);
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 

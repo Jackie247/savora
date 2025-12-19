@@ -72,5 +72,7 @@ const useAuthStore = create<AuthStore>((set, get) => ({
 }));
 
 export const useInit = () => useAuthStore((state) => state.init);
+export const useSession = () => useAuthStore((state) => state.session)
+export const useLoading = () => useAuthStore((state) => state.loading)
 
-export default useAuthStore;
+useAuthStore;

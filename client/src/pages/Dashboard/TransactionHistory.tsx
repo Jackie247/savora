@@ -1,6 +1,6 @@
-import NetflixLogo from "../../assets/icons/netflix-logo.svg?react";
-import SalaryLogo from "../../assets/icons/salary-logo.svg?react";
-import SpotifyLogo from "../../assets/icons/spotify-logo.svg?react";
+import NetflixLogo from "../../assets/icons/netflix-logo.svg";
+import SalaryLogo from "../../assets/icons/salary-logo.svg";
+import SpotifyLogo from "../../assets/icons/spotify-logo.svg";
 import TransactionRow from "./TransactionRow";
 
 const TransctionHistory = () => {

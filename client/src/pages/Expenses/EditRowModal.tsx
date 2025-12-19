@@ -1,21 +1,35 @@
 import DayOfMonthPicker from "../../components/DayOfMonthPicker";
 // import DayOfWeekPicker from "../../components/DayOfWeekPicker";
 import ModalField from "../../components/ModalField";
-import useModalStore from "../../store/modal.store";
-import useTableStore from "@/store/table.store";
+import {
+  useModalValues,
+  useResetModal,
+  useCloseModal,
+  useUpdateModalValue,
+} from "../../store/modal.store";
+import { type UpdateRow } from "../../../../types/table.types";
+import { useUpdateRow, useGetRows } from "@/store/table.store";
+import { type FormEvent } from "react";
 // import { useState } from "react";
 const EditRowModal = () => {
-  const { modalValues, resetModal, closeModal, updateModalValue } =
-    useModalStore();
+  // This modal pops up when editing a row
+  // Selectors to grab pieces of state from the useModalStore
+  const modalValues = useModalValues();
+  const resetModal = useResetModal();
+  const closeModal = useCloseModal();
+  const updateModalValue = useUpdateModalValue();
+  // Action selectors to update the UI after editing rows.
+  const updateRow = useUpdateRow();
+  const getRows = useGetRows();
 
-  const { updateRow, getRows } = useTableStore();
-
+  // These interval options are displayed when expense is set to a recurring expense
   const intervalOptions = [
     { value: "daily", label: "Daily" },
     { value: "weekly", label: "Weekly" },
     { value: "monthly", label: "Monthly" },
   ];
 
+  // Options for weekly recurring expense
   const weeklyOptions = [
     { value: "monday", label: "Monday" },
     { value: "tuesday", label: "Tuesday" },
@@ -30,42 +44,48 @@ const EditRowModal = () => {
   const interval = modalValues.recurring_interval;
   // const weeklyDay = modalValues.recurring_day_of_week;
 
-  const sanitizeValues = (values: typeof modalValues) => {
-    const next = { ...values };
+  const sanitizeValues = (values: UpdateRow) => {
+    const cleaned: UpdateRow = { ...values };
 
     // non-recurring
     if (!values.is_recurring) {
-      next.recurring_day = null;
-      next.recurring_day_of_week = null;
-      next.recurring_interval = null;
-      return next;
+      cleaned.recurring_day = null;
+      cleaned.recurring_day_of_week = null;
+      cleaned.recurring_interval = null;
+      return cleaned;
     }
 
     // recurring: interval required
     if (values.recurring_interval === "monthly") {
-      next.expense_date = null;
-      next.recurring_day_of_week = null;
-      return next;
+      cleaned.expense_date = null;
+      cleaned.recurring_day_of_week = null;
+      return cleaned;
     }
 
     if (values.recurring_interval === "weekly") {
-      next.expense_date = null;
-      next.recurring_day = null;
-      return next;
+      cleaned.expense_date = null;
+      cleaned.recurring_day = null;
+      return cleaned;
     }
 
     // daily or unknown
-    next.recurring_interval = "daily";
-    next.expense_date = null;
-    next.recurring_day = null;
-    next.recurring_day_of_week = null;
-    return next;
+    cleaned.recurring_interval = "daily";
+    cleaned.expense_date = null;
+    cleaned.recurring_day = null;
+    cleaned.recurring_day_of_week = null;
+    return cleaned;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const cleanedModalValues = sanitizeValues(modalValues);
+    // Type guard: ensure we have an id for updates
+    if (!modalValues.id) {
+      console.error("Cannot update row without an id");
+      return;
+    }
+
+    const cleanedModalValues = sanitizeValues(modalValues as UpdateRow);
 
     await updateRow(cleanedModalValues);
     closeModal();
@@ -91,7 +111,7 @@ const EditRowModal = () => {
               { value: "credit", label: "Credit" },
             ]}
             field="expense_type"
-            value={modalValues.expense_Type}
+            value={modalValues.expense_type}
             updateModalValue={updateModalValue}
           />
           <ModalField

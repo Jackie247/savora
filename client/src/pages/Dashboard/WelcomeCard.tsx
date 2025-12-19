@@ -1,8 +1,12 @@
 import { Bell } from "lucide-react";
 
-const WelcomeCard = ({ firstName, lastName }) => {
+interface WelcomeCardProps {
+  firstName: string;
+  lastName: string;
+}
+const WelcomeCard = ({ firstName, lastName }: WelcomeCardProps) => {
   const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-  
+
   return (
     <section className="p-6 bg-sidebar-primary [clip-path:ellipse(120%_60%_at_50%_0%)]">
       <div className="flex flex-col">

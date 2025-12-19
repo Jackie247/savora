@@ -1,7 +1,6 @@
 import React from "react";
 import * as echarts from "echarts/core";
 import { PieChart } from "echarts/charts";
-import ReactECharts from "echarts-for-react";
 import { Pie } from "react-chartjs-2";
 import {
   TitleComponent,

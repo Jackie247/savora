@@ -8,26 +8,22 @@ const formatNumber = (number: number) => {
   return formattedNumber;
 };
 
-interface Values {
-  balance: number;
+interface SummaryBoxProps {
   income: number;
   expenses: number;
 }
 
-const SummaryBox = ({ balance, income, expenses }: Values) => {
-  console.log(balance);
+const SummaryBox = ({ income, expenses }: SummaryBoxProps) => {
   const formattedIncome = formatNumber(income);
   const formattedExpenses = formatNumber(expenses);
-  const formattedBalance = formatNumber(balance);
-
-  const balanceTotal = income - expenses;
+  const formattedBalance = formatNumber(income - expenses);
 
   return (
     <article className="flex flex-col bg-sidebar-primary border border-gray-100 shadow-sm rounded-lg w-[90vw] p-4">
       <div className="flex flex-col mb-4">
         <span className="text-xl text-primary-foreground">Balance</span>
         <span className="text-3xl text-primary-foreground">
-          <b>{formatNumber(balanceTotal)} </b>
+          <b>{formattedBalance} </b>
         </span>
       </div>
 

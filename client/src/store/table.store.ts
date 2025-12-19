@@ -69,6 +69,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 
 			// Refresh the table data
 			await get().getRows();
+
 		} catch (error) {
 			console.log("Error:", error);
 		}
@@ -156,5 +157,15 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		set((state) => ({ ...state, expensesTotal: total }));
 	},
 }));
+
+// Commonly used selectors
+export const useTables = () => useTableStore((state) => state.tables)
+export const useExpensesTotal = () => useTableStore((state) => state.expensesTotal)
+export const useCurrentTableTotal = () => useTableStore((state) => state.currentTableTotal)
+// action selectors
+export const useAddRow = () => useTableStore((state) => state.addRow)
+export const useDeleteRow = () => useTableStore((state) => state.deleteRow)
+export const useGetRows = () => useTableStore((state) => state.getRows)
+export const useCalculateTableTotal = () => useTableStore((state) => state.calculateTableTotal)
 
 export default useTableStore;

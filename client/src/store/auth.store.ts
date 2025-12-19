@@ -58,6 +58,7 @@ const useAuthStore = create<AuthStore>((set, get) => ({
 					subscription.unsubscribe();
 				} catch (e) {
 					// ignore unsubscribe errors in cleanup
+					console.log(e)
 				}
 				set({ unsubscribe: undefined });
 			},
@@ -69,5 +70,7 @@ const useAuthStore = create<AuthStore>((set, get) => ({
 		// SIGNED_OUT event will update the store
 	},
 }));
+
+export const useInit = () => useAuthStore((state) => state.init);
 
 export default useAuthStore;

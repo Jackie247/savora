@@ -15,4 +15,6 @@ const useExpensesStore = create<ExpenseStore>()((set) => ({
     },
 }))
 
-export default useExpensesStore;
+export const useCurrentTab = () => useExpensesStore((state) => state.currentTab);
+export const useUpdateCurrentTab = () => useExpensesStore((state) => state.updateCurrentTab)
+

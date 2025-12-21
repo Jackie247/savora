@@ -3,7 +3,7 @@ interface TransactionRowProps {
   value: string;
   type: "income" | "expense";
   date: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon: string;
 }
 
 const TransactionRow = ({
@@ -11,13 +11,13 @@ const TransactionRow = ({
   value,
   type,
   date,
-  icon: Icon,
+  icon,
 }: TransactionRowProps) => {
   return (
     <div className="flex items-center h-14 border-gray-200 relative">
       {/* Icon */}
       <div className="bg-gray-300 p-1 rounded-sm">
-        {Icon && <Icon className="w-6 h-6" />}
+        <img src={icon} alt={title} className="w-5 h-5" />
       </div>
 
       <div className="flex flex-col flex-1 ml-2">

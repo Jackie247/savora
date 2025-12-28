@@ -5,7 +5,7 @@ import type {
 	UpdateRow
 } from "../../../types/table.types";
 import { supabase } from '@/lib/supabase/client'
-import { useSession, useLoading } from "./auth.store";
+import useAuthStore from "./auth.store";
 
 interface TableStore {
 	tables: Record<string, ExpenseData[]>;
@@ -29,7 +29,7 @@ const useTableStore = create<TableStore>()((set, get) => ({
 	expensesTotal: 0,
 
 	addRow: async (row) => {
-		const session = useSession()
+		const session = useAuthStore.getState().session;
 
 		if (!session) {
 			console.error('No session found');
@@ -75,8 +75,9 @@ const useTableStore = create<TableStore>()((set, get) => ({
 		}
 	},
 	getRows: async () => {
-		const session = useSession()
-		const loading = useLoading()
+		const session = useAuthStore.getState().session;
+		const loading = useAuthStore.getState().loading
+
 		console.log(loading)
 		console.log("session is", session)
 		if (loading || !session) return;

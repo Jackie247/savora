@@ -8,7 +8,10 @@ const WelcomeCard = ({ firstName, lastName }: WelcomeCardProps) => {
   const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 
   return (
-    <section className="p-6 bg-sidebar-primary [clip-path:ellipse(120%_60%_at_50%_0%)]">
+    <section
+      data-testid="welcome-card"
+      className="p-6 bg-sidebar-primary [clip-path:ellipse(120%_60%_at_50%_0%)] md:px-10 lg:px-20 xl:px-60"
+    >
       <div className="flex flex-col">
         {name ? (
           <>

@@ -1,18 +1,15 @@
 import { create } from 'zustand';
-import type { ComponentType, SVGProps } from 'react';
 import NetflixLogo from '../assets/icons/netflix-logo.svg';
 import SpotifyLogo from '../assets/icons/spotify-logo.svg';
 import SalaryLogo from '../assets/icons/salary-logo.svg';
-
-export type TransactionType = 'income' | 'expense';
 
 export interface Transaction {
     id: string;
     title: string;
     value: string;
-    type: TransactionType;
+    type: string;
     date: string;
-    icon: ComponentType<SVGProps<SVGSVGElement>>;
+    icon: string;
 }
 
 interface TransactionStore {

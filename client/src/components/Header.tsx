@@ -2,7 +2,8 @@ const Header = () => {
   return (
     <header
       id="header"
-      className="flex justify-between p-8 align-middle items-center w-full"
+      data-testid="header"
+      className="flex justify-between p-8 align-middle items-center w-full md:px-10 lg:px-20 xl:px-60"
     >
       <div id="logo">
         <a href="/">

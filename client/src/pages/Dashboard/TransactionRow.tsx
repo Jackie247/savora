@@ -1,7 +1,7 @@
 interface TransactionRowProps {
   title: string;
   value: string;
-  type: "income" | "expense";
+  type: string;
   date: string;
   icon: string;
 }

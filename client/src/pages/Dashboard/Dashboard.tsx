@@ -55,7 +55,7 @@ function Dashboard() {
           <ul className="flex space-x-5 my-5">
             <li>
               <span className="sr-only">Github</span>
-              <img src={GithubLogo} className="h-6 w-6"></img>
+              <img alt="github logo" src={GithubLogo} className="h-6 w-6"></img>
             </li>
             <li>Linkedin</li>
           </ul>
@@ -64,16 +64,16 @@ function Dashboard() {
             <h6 className="text-xl">Navigation</h6>
             <ul className="text-sm my-4 space-y-2">
               <li>
-                <a>Expenses</a>
+                <a href="/expenses">Expenses</a>
               </li>
               <li>
-                <a>Accounts</a>
+                <a href="/accounts">Accounts</a>
               </li>
               <li>
-                <a>Help</a>
+                <a href="/help">Help</a>
               </li>
               <li>
-                <a>Contact Us</a>
+                <a href="/">Contact Us</a>
               </li>
             </ul>
           </nav>
